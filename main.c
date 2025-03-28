@@ -86,14 +86,14 @@ int getTotalWeight(material_t *materialArr) {
 
 void setGameArrayValues(char **gameArray,material_t *materialArr) {
     int totalWeight;
-    totalWeight = getTotalWeight(&materialArr);
+    totalWeight = getTotalWeight(materialArr);
     printf("totalWeight: %d",totalWeight);
 }
 
 char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
     char **gameArray;
     gameArray = generate2Darr(gameXspan,gameYspan);
-    setGameArrayValues(&gameArray,&materialArr);
+    setGameArrayValues(gameArray,materialArr);
 }
 
 
@@ -108,6 +108,6 @@ int main() {
     gameYspan = 12;
 
     char **gameArray;
-    gameArray = generateWorld(gameXspan,gameYspan,&materialArr);
+    gameArray = generateWorld(gameXspan,gameYspan,materialArr);
 
 }
