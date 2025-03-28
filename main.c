@@ -79,15 +79,34 @@ int getTotalWeight(material_t *materialArr) {
     int i;
     for (i=0;i<NUMITEMS;i++) {
         totalWeight += materialArr[i].weight;
-        printf("matWeight:  %d  totalWeight: %d\n",materialArr[i].weight,totalWeight);
     }
     return totalWeight;
+}
+
+char generateWeightArray(material_t *materialArr, int totalWeight) {
+    char *weightArray = malloc(totalWeight*sizeof(char));
+    int materialIndex,weightIndex,lastIndex=0,currentMatWeight;
+    for (materialIndex=0;materialIndex<NUMITEMS;materialIndex++) {
+        currentMatWeight = materialArr[materialIndex].weight;
+        char currentMatIdent = materialArr[materialIndex].ident;
+        for (weightIndex=0;weightIndex<currentMatWeight;weightIndex++) {
+            weightArray[lastIndex] = currentMatIdent;
+            printf("%c\n",currentMatIdent);
+            lastIndex++;
+        }
+    }
+    return weightArray;
 }
 
 void setGameArrayValues(char **gameArray,material_t *materialArr) {
     int totalWeight;
     totalWeight = getTotalWeight(materialArr);
-    printf("totalWeight: %d",totalWeight);
+    char *weightedMaterialArr;
+    weightedMaterialArr = generateWeightArray(materialArr,totalWeight);
+    int i;
+    for (i=0;i<totalWeight;i++) {
+        printf("%c\n",weightedMaterialArr[i]);
+    }
 }
 
 char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
@@ -98,7 +117,7 @@ char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
 
 
 int main() {
-    //Test matterial array generation.
+    //Test material array generation.
     material_t *materialArr;
     materialArr = generateMaterials();
 
@@ -109,5 +128,6 @@ int main() {
 
     char **gameArray;
     gameArray = generateWorld(gameXspan,gameYspan,materialArr);
+
 
 }
