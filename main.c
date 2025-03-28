@@ -33,7 +33,7 @@ typedef struct invItem invItem_t;
 struct character {
     pos_t playerPos;
     int consumableRemaining;
-    invItem_t inventory[numItems];
+    //invItem_t inventory[numItems];
 };
 
 //Functions
@@ -41,7 +41,7 @@ struct character {
 material_t *generateMaterials() {
     material_t *materialArr = malloc(numItems*sizeof(material_t));
     if (!materialArr) {
-        return NULL
+        return NULL;
     }
 
     //Hard coding two materials for initial testing. Needs to be updated
@@ -59,7 +59,7 @@ material_t *generateMaterials() {
     materialArr[1].size = 10;
     materialArr[1].mineable = 1;
 
-    return materialArr
+    return materialArr;
 
 }
 
@@ -70,6 +70,6 @@ int main() {
     materialArr = generateMaterials();
 
     //Print out some details of mat array to confirm good running
-    printf("%s",materialArr[0].name);
+    printf("%s\n",materialArr[0].name);
     printf("%s",materialArr[1].name);
 }
