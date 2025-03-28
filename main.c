@@ -38,29 +38,27 @@ struct character {
 
 //Functions
 
+void setMaterial(material_t *materialPointer, char ident, char name[10], int weight, int value, int size, int mineable) {
+    materialPointer->ident = ident;
+    strcpy(materialPointer->name,name);
+    materialPointer->weight = weight;
+    materialPointer->value = value;
+    materialPointer->size = size;
+    materialPointer->mineable = mineable;
+}
+
+
 material_t *generateMaterials() {
     material_t *materialArr = malloc(numItems*sizeof(material_t));
     if (!materialArr) {
         return NULL;
     }
 
-    //Hard coding two materials for initial testing. Needs to be updated
-    materialArr[0].ident= 'c';
-    strcpy(materialArr[0].name,"coal");
-    materialArr[0].weight = 50;
-    materialArr[0].value = 3;
-    materialArr[0].size = 5;
-    materialArr[0].mineable = 1;
-
-    materialArr[1].ident= 'e';
-    strcpy(materialArr[1].name,"emerald");
-    materialArr[1].weight = 10;
-    materialArr[1].value = 25;
-    materialArr[1].size = 10;
-    materialArr[1].mineable = 1;
+    //Needs updating with getting material details from file
+    setMaterial(&materialArr[0],'c',"coal",50,3,5,1);
+    setMaterial(&materialArr[1],'e',"emerald",10,25,10,1);
 
     return materialArr;
-
 }
 
 
