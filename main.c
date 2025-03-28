@@ -4,8 +4,7 @@
 #include <time.h>
 
 //Constant value equal to number of collectable items in the Game.
-const int numItems = 2;
-
+#define NUMITEMS 2
 
 //Defining structures
 struct pos {
@@ -33,7 +32,7 @@ typedef struct invItem invItem_t;
 struct character {
     pos_t playerPos;
     int consumableRemaining;
-    //invItem_t inventory[numItems];
+    invItem_t inventory[NUMITEMS];
 };
 
 //Functions
