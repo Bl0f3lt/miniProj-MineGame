@@ -83,7 +83,7 @@ int getTotalWeight(material_t *materialArr) {
     return totalWeight;
 }
 
-char generateWeightArray(material_t *materialArr, int totalWeight) {
+char *generateWeightArray(material_t *materialArr, int totalWeight) {
     char *weightArray = malloc(totalWeight*sizeof(char));
     int materialIndex,weightIndex,lastIndex=0,currentMatWeight;
     for (materialIndex=0;materialIndex<NUMITEMS;materialIndex++) {
@@ -91,7 +91,7 @@ char generateWeightArray(material_t *materialArr, int totalWeight) {
         char currentMatIdent = materialArr[materialIndex].ident;
         for (weightIndex=0;weightIndex<currentMatWeight;weightIndex++) {
             weightArray[lastIndex] = currentMatIdent;
-            printf("%c\n",currentMatIdent);
+            //printf("%c\n",currentMatIdent);
             lastIndex++;
         }
     }
