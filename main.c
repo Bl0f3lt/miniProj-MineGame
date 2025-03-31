@@ -112,17 +112,10 @@ void setGameArrayValues(char **gameArray,material_t *materialArr,int gameXspan,i
     for (i=0;i<gameYspan;i++) {
         for (j=0;j<gameXspan;j++) {
             randInt = rand() % totalWeight;
-            //printf("%c ",weightedMaterialArr[randInt]);
             randChar = weightedMaterialArr[randInt];
             gameArray[i][j] = randChar;
-            printf("%c ",gameArray[i][j]);
         }
-        printf("\n");
     }
-
-    //for (i=0;i<totalWeight;i++) {
-    //    printf("%c\n",weightedMaterialArr[i]);
-    //}
 }
 
 char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
@@ -136,6 +129,7 @@ char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
     }
 
     setGameArrayValues(gameArray,materialArr,gameXspan,gameYspan);
+    return gameArray;
 }
 
 
