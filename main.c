@@ -192,7 +192,7 @@ int main() {
     material_t *materialArr;
     materialArr = generateMaterials();
 
-    //Manual definition of size for now. May change to add dificulty.
+    //Manual definition of size for now. May change to add difficulty.
     int gameXspan,gameYspan;
     gameXspan = 12;
     gameYspan = 12;
