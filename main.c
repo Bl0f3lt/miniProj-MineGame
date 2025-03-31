@@ -33,7 +33,8 @@ typedef struct invItem invItem_t;
 
 struct character {
     pos_t playerPos;
-    int consumableRemaining;
+    int food;
+    int health;
     invItem_t inventory[NUMITEMS];
 };
 typedef struct character character_t;
@@ -173,7 +174,8 @@ void initCharacter(character_t *character,material_t *materialArr,int gameXspan)
     initInvArr(character,materialArr);
 
     //Initialise consumable resource
-    character->consumableRemaining = 10;
+    character->food = 10;
+    character->health = 3;
 }
 
 //Main game loop functions
@@ -187,9 +189,9 @@ void displayWorld(char **gameArray,int gameX,int gameY) {
     }
 }
 
-void displayGame(char **gameArray,int gameX,int gameY) {
+void displayGame(char **gameArray,character_t *character,int gameX,int gameY) {
     //Display game head, temp as filler text
-    printf("GameHead\n\n");
+    printf("Food: %d\tHealth: %d\n\n",character->food,character->health);
     displayWorld(gameArray,gameX,gameY);
     printf("\n");
     printf("User options");
@@ -215,8 +217,8 @@ int main() {
     initCharacter(character,materialArr,gameXspan);
 
     //main game loop
-    while (character->consumableRemaining>0) {
-        displayGame(gameArray,gameXspan,gameYspan);
+    while (character->health>0) {
+        displayGame(gameArray,character,gameXspan,gameYspan);
         int i;
         scanf("%d",&i);
 
