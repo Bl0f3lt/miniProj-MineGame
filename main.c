@@ -58,7 +58,7 @@ material_t *generateMaterials() {
     }
 
     //Needs updating with getting material details from file
-    setMaterial(&materialArr[0],'c',"coal",50,3,5,1);
+    setMaterial(&materialArr[0],'.',"air",100,0,0,1);
     setMaterial(&materialArr[1],'e',"emerald",10,25,10,1);
 
     return materialArr;
@@ -163,7 +163,7 @@ void initInvArr(character_t *character,material_t *materialArr) {
     }
 }
 
-void initCharacter(character_t *character,material_t *materialArr,int gameXspan) {
+void initCharacter(char **gameArr,character_t *character,material_t *materialArr,int gameXspan) {
     //Generate random start position
     pos_t randPos = getRandStartPos(gameXspan);
     //Assign rand start pos to character.
@@ -176,6 +176,9 @@ void initCharacter(character_t *character,material_t *materialArr,int gameXspan)
     //Initialise consumable resource
     character->food = 10;
     character->health = 3;
+
+    //Place character in gameArr
+    gameArr[character->playerPos.y][character->playerPos.x] = '@';
 }
 
 //Main game loop functions
@@ -189,12 +192,28 @@ void displayWorld(char **gameArray,int gameX,int gameY) {
     }
 }
 
+void displayUserOptions(char **gameArray,character_t *character,int gameX,int gameY) {
+    pos_t characterPos = character->playerPos;
+    if (!((characterPos.y - 1)<0)) {
+        printf("up: w\n");
+    }
+    if (!((characterPos.x + 1)>gameX)) {
+        printf("east: d\n");
+    }
+    if (!((characterPos.y + 1)>gameY)) {
+        printf("down: s\n");
+    }
+    if (!((characterPos.x - 1)<0)) {
+        printf("west: a\n");
+    }
+}
+
 void displayGame(char **gameArray,character_t *character,int gameX,int gameY) {
     //Display game head, temp as filler text
     printf("Food: %d\tHealth: %d\n\n",character->food,character->health);
     displayWorld(gameArray,gameX,gameY);
     printf("\n");
-    printf("User options");
+    displayUserOptions(gameArray,character,gameX,gameY);
 }
 
 int main() {
@@ -214,7 +233,8 @@ int main() {
     gameArray = generateWorld(gameXspan,gameYspan,materialArr);
 
     character_t *character;
-    initCharacter(character,materialArr,gameXspan);
+    initCharacter(gameArray,character,materialArr,gameXspan);
+
 
     //main game loop
     while (character->health>0) {
