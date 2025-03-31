@@ -69,7 +69,10 @@ char **generate2Darr(int x,int y) {
     //Dynamic memory allocation means memory not reserved at compilation but instead runtime
     array = (char**)calloc(y,x*sizeof(char));
     for (z=0;z<y;z++) {
-        array[y] = (char*)malloc(x*sizeof(char));
+        array[z] = (char*)malloc(x*sizeof(char));
+    }
+    if (!array) {
+        return NULL;
     }
     return array;
 }
@@ -91,32 +94,55 @@ char *generateWeightArray(material_t *materialArr, int totalWeight) {
         char currentMatIdent = materialArr[materialIndex].ident;
         for (weightIndex=0;weightIndex<currentMatWeight;weightIndex++) {
             weightArray[lastIndex] = currentMatIdent;
-            //printf("%c\n",currentMatIdent);
             lastIndex++;
         }
     }
     return weightArray;
 }
 
-void setGameArrayValues(char **gameArray,material_t *materialArr) {
+void setGameArrayValues(char **gameArray,material_t *materialArr,int gameXspan,int gameYspan) {
     int totalWeight;
     totalWeight = getTotalWeight(materialArr);
     char *weightedMaterialArr;
     weightedMaterialArr = generateWeightArray(materialArr,totalWeight);
-    int i;
-    for (i=0;i<totalWeight;i++) {
-        printf("%c\n",weightedMaterialArr[i]);
+    printf("Gen weightArr\n");
+
+    int i,j,randInt;
+    char randChar;
+    for (i=0;i<gameYspan;i++) {
+        for (j=0;j<gameXspan;j++) {
+            randInt = rand() % totalWeight;
+            //printf("%c ",weightedMaterialArr[randInt]);
+            randChar = weightedMaterialArr[randInt];
+            gameArray[i][j] = randChar;
+            printf("%c ",gameArray[i][j]);
+        }
+        printf("\n");
     }
+
+    //for (i=0;i<totalWeight;i++) {
+    //    printf("%c\n",weightedMaterialArr[i]);
+    //}
 }
 
 char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
     char **gameArray;
     gameArray = generate2Darr(gameXspan,gameYspan);
-    setGameArrayValues(gameArray,materialArr);
+
+    //Error handling case of gameArr allocation failure.
+    if (!gameArray) {
+        printf("Error in 2dArr gen.\n");
+        return NULL;
+    }
+
+    setGameArrayValues(gameArray,materialArr,gameXspan,gameYspan);
 }
 
 
 int main() {
+    //Initialise Time
+    srand(time(NULL));
+
     //Test material array generation.
     material_t *materialArr;
     materialArr = generateMaterials();
