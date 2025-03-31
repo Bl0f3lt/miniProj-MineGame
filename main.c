@@ -176,12 +176,23 @@ void initCharacter(character_t *character,material_t *materialArr,int gameXspan)
     character->consumableRemaining = 10;
 }
 
-void checkInvGen(character_t *character) {
-    int i;
-    for (i=0;i<NUMITEMS;i++) {
-        printf("%s    :quantity: %d\n",character->inventory[i].invMaterial->name,
-               character->inventory[i].quant);
+//Main game loop functions
+void displayWorld(char **gameArray,int gameX,int gameY) {
+    int i,j;
+    for (i=0;i<gameY;i++) {
+        for (j=0;j<gameX;j++) {
+            printf("%c ",gameArray[i][j]);
+        }
+        printf("\n");
     }
+}
+
+void displayGame(char **gameArray,int gameX,int gameY) {
+    //Display game head, temp as filler text
+    printf("GameHead\n\n");
+    displayWorld(gameArray,gameX,gameY);
+    printf("\n");
+    printf("User options");
 }
 
 int main() {
@@ -203,6 +214,12 @@ int main() {
     character_t *character;
     initCharacter(character,materialArr,gameXspan);
 
-    checkInvGen(character);
+    //main game loop
+    while (character->consumableRemaining>0) {
+        displayGame(gameArray,gameXspan,gameYspan);
+        int i;
+        scanf("%d",&i);
+
+    }
 
 }
