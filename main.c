@@ -36,6 +36,7 @@ struct character {
     int consumableRemaining;
     invItem_t inventory[NUMITEMS];
 };
+typedef struct character character_t;
 
 //Functions
 
@@ -105,7 +106,6 @@ void setGameArrayValues(char **gameArray,material_t *materialArr,int gameXspan,i
     totalWeight = getTotalWeight(materialArr);
     char *weightedMaterialArr;
     weightedMaterialArr = generateWeightArray(materialArr,totalWeight);
-    printf("Gen weightArr\n");
 
     int i,j,randInt;
     char randChar;
@@ -117,6 +117,8 @@ void setGameArrayValues(char **gameArray,material_t *materialArr,int gameXspan,i
         }
     }
 }
+
+
 
 char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
     char **gameArray;
@@ -132,6 +134,55 @@ char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
     return gameArray;
 }
 
+//Character functs:
+
+pos_t getRandPos(xBound,yBound) {
+    pos_t randPos;
+    if (xBound == 0) {
+        xBound++;
+    }
+    if (yBound == 0) {
+        yBound++;
+    }
+
+    randPos.x = rand() % xBound;
+    randPos.y = rand() % yBound;
+    return randPos;
+}
+
+pos_t getRandStartPos(int gameXspan) {
+    return getRandPos(gameXspan,0);
+}
+
+void initInvArr(character_t *character,material_t *materialArr) {
+    int i;
+    for (i=0;i<NUMITEMS;i++) {
+        character->inventory[i].invMaterial = &materialArr[i];
+        character->inventory[i].quant = 0;
+    }
+}
+
+void initCharacter(character_t *character,material_t *materialArr,int gameXspan) {
+    //Generate random start position
+    pos_t randPos = getRandStartPos(gameXspan);
+    //Assign rand start pos to character.
+    character->playerPos.x = randPos.x;
+    character->playerPos.y = randPos.y;
+
+    //Initialise the player inventory
+    initInvArr(character,materialArr);
+
+    //Initialise consumable resource
+    character->consumableRemaining = 10;
+}
+
+void checkInvGen(character_t *character) {
+    int i;
+    for (i=0;i<NUMITEMS;i++) {
+        printf("%s    :quantity: %d\n",character->inventory[i].invMaterial->name,
+               character->inventory[i].quant);
+    }
+}
 
 int main() {
     //Initialise Time
@@ -149,5 +200,9 @@ int main() {
     char **gameArray;
     gameArray = generateWorld(gameXspan,gameYspan,materialArr);
 
+    character_t *character;
+    initCharacter(character,materialArr,gameXspan);
+
+    checkInvGen(character);
 
 }
