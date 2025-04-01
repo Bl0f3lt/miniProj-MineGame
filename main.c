@@ -4,7 +4,7 @@
 #include <time.h>
 
 //Constant value equal to number of collectable items in the Game.
-#define NUMITEMS 2
+#define NUMITEMS 3
 
 
 
@@ -60,6 +60,7 @@ material_t *generateMaterials() {
     //Needs updating with getting material details from file
     setMaterial(&materialArr[0],'.',"air",100,0,0,1);
     setMaterial(&materialArr[1],'e',"emerald",10,25,10,1);
+    setMaterial(&materialArr[2],'d',"diamond",5,40,5,1);
 
     return materialArr;
 }
@@ -240,6 +241,9 @@ int checkValidMove(character_t *character,char userMove,int gameX,int gameY) {
             return 1;
         }
     }
+    else if (userMove == 'i') {
+        return 1;
+    }
     return 0;
 
 }
@@ -263,15 +267,34 @@ pos_t getNewUserPos(char userEntry,character_t *character) {
         newPos.x -= 1;
         return newPos;
     }
+    else if (userEntry == 'i') {
+        return newPos;
+    }
 }
 
-pos_t getUserMove(character_t *character,int gameX,int gameY) {
+void displayUserInv(character_t *character,material_t *materialArr){
+    int i;
+    system("cls");
+    fseek(stdin,0,SEEK_END);
+    for (i=0;i<NUMITEMS;i++) {
+        if (character->inventory[i].quant > 0 && character->inventory[i].invMaterial->ident != '.') {
+            printf("%s: %d\nvalue: %d\n\n",character->inventory[i].invMaterial->name,
+                   character->inventory[i].quant,
+                   (character->inventory[i].invMaterial->value)*(character->inventory[i].quant));
+        }
+    }
+    printf("Press enter to continue\n");
+    char enter = NULL;
+    scanf("%c",&enter);
+
+}
+
+pos_t getUserMove(character_t *character,material_t *materialArr,int gameX,int gameY) {
     char userEntry;
     int validEntry = 0;
     fseek(stdin,0,SEEK_END);
     while (!validEntry) {
         scanf("%c",&userEntry);
-        printf("%c\n",userEntry);
         if (!checkValidMove(character,userEntry,gameX,gameY)) {
             printf("Not valid input! Try again: ");
             fseek(stdin,0,SEEK_END); //Clear input buffer to accept another input. Prevents looping.
@@ -280,9 +303,15 @@ pos_t getUserMove(character_t *character,int gameX,int gameY) {
             validEntry = 1;
         }
     }
+    if (userEntry == 'i') {
+        displayUserInv(character,materialArr);
+    }
+
     pos_t newPos = getNewUserPos(userEntry,character);
     return newPos;
 }
+
+//Check against design below:
 
 char getItemToCollect(char **gameArr,pos_t newPosition) {
     return gameArr[newPosition.y][newPosition.x];
@@ -299,14 +328,18 @@ void updateMaterialQuant(character_t *character,char material) {
 }
 
 void updateUserInventory(character_t *character,char **gameArr,pos_t newPosition) {
-    char material = getItemToCollect(gameArr,newPosition);
-    updateMaterialQuant(character,material);
+    if (!((newPosition.x == character->playerPos.x) && (newPosition.y == character->playerPos.y))) {
+        char material = getItemToCollect(gameArr,newPosition);
+        updateMaterialQuant(character,material);
+    }
 }
 
 void updateUserPosition(char **gameArr,pos_t newPos,character_t *character) {
-    gameArr[character->playerPos.y][character->playerPos.x] = '.';
-    character->playerPos = newPos;
-    gameArr[character->playerPos.y][character->playerPos.x] = '@';
+    if (!((newPos.x == character->playerPos.x) && (newPos.y == character->playerPos.y))) {
+        gameArr[character->playerPos.y][character->playerPos.x] = '.';
+        character->playerPos = newPos;
+        gameArr[character->playerPos.y][character->playerPos.x] = '@';
+    }
 }
 
 int main() {
@@ -332,11 +365,11 @@ int main() {
     //main game loop
     while (character->health>0) {
         displayGame(gameArray,character,gameXspan,gameYspan);
-        newUserPos = getUserMove(character,gameXspan,gameYspan);
-        printf("%d,%d\n",newUserPos.x,newUserPos.y);
+        newUserPos = getUserMove(character,materialArr,gameXspan,gameYspan);
         updateUserInventory(character,gameArray,newUserPos);
         updateUserPosition(gameArray,newUserPos,character);
 
+        system("cls"); //Clear the console before next print.
     }
 
 }
