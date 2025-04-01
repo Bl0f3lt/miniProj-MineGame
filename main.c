@@ -214,6 +214,99 @@ void displayGame(char **gameArray,character_t *character,int gameX,int gameY) {
     displayWorld(gameArray,gameX,gameY);
     printf("\n");
     displayUserOptions(gameArray,character,gameX,gameY);
+    printf("Enter a move to play: ");
+}
+
+int checkValidMove(character_t *character,char userMove,int gameX,int gameY) {
+    pos_t characterPos = character->playerPos;
+
+    if (userMove == 'w') {
+        if (!((characterPos.y - 1)<0)) {
+            return 1;
+        }
+    }
+    else if (userMove == 'd') {
+        if (!((characterPos.x + 1)>gameX)) {
+            return 1;
+        }
+    }
+    else if (userMove == 's') {
+        if (!((characterPos.y + 1)>gameY)) {
+            return 1;
+        }
+    }
+    else if (userMove == 'a') {
+        if (!((characterPos.x - 1)<0)) {
+            return 1;
+        }
+    }
+    return 0;
+
+}
+
+pos_t getNewUserPos(char userEntry,character_t *character) {
+    pos_t newPos;
+    newPos = character->playerPos;
+    if (userEntry == 'w') {
+        newPos.y -= 1;
+        return newPos;
+    }
+    else if (userEntry == 'd') {
+        newPos.x += 1;
+        return newPos;
+    }
+    else if (userEntry == 's') {
+        newPos.y += 1;
+        return newPos;
+    }
+    else if (userEntry == 'a') {
+        newPos.x -= 1;
+        return newPos;
+    }
+}
+
+pos_t getUserMove(character_t *character,int gameX,int gameY) {
+    char userEntry;
+    int validEntry = 0;
+    fseek(stdin,0,SEEK_END);
+    while (!validEntry) {
+        scanf("%c",&userEntry);
+        printf("%c\n",userEntry);
+        if (!checkValidMove(character,userEntry,gameX,gameY)) {
+            printf("Not valid input! Try again: ");
+            fseek(stdin,0,SEEK_END); //Clear input buffer to accept another input. Prevents looping.
+        }
+        else {
+            validEntry = 1;
+        }
+    }
+    pos_t newPos = getNewUserPos(userEntry,character);
+    return newPos;
+}
+
+char getItemToCollect(char **gameArr,pos_t newPosition) {
+    return gameArr[newPosition.y][newPosition.x];
+}
+
+void updateMaterialQuant(character_t *character,char material) {
+    int i;
+    for (i=0;i<NUMITEMS;i++) {
+        if (character->inventory[i].invMaterial->ident == material) {
+            character->inventory[i].quant += 1;
+            break;
+        }
+    }
+}
+
+void updateUserInventory(character_t *character,char **gameArr,pos_t newPosition) {
+    char material = getItemToCollect(gameArr,newPosition);
+    updateMaterialQuant(character,material);
+}
+
+void updateUserPosition(char **gameArr,pos_t newPos,character_t *character) {
+    gameArr[character->playerPos.y][character->playerPos.x] = '.';
+    character->playerPos = newPos;
+    gameArr[character->playerPos.y][character->playerPos.x] = '@';
 }
 
 int main() {
@@ -235,12 +328,14 @@ int main() {
     character_t *character;
     initCharacter(gameArray,character,materialArr,gameXspan);
 
-
+    pos_t newUserPos;
     //main game loop
     while (character->health>0) {
         displayGame(gameArray,character,gameXspan,gameYspan);
-        int i;
-        scanf("%d",&i);
+        newUserPos = getUserMove(character,gameXspan,gameYspan);
+        printf("%d,%d\n",newUserPos.x,newUserPos.y);
+        updateUserInventory(character,gameArray,newUserPos);
+        updateUserPosition(gameArray,newUserPos,character);
 
     }
 
