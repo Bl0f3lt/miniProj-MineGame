@@ -6,8 +6,6 @@
 //Constant value equal to number of collectable items in the Game.
 #define NUMITEMS 3
 
-
-
 //Defining structures
 struct pos {
     int x;
@@ -342,6 +340,29 @@ void updateUserPosition(char **gameArr,pos_t newPos,character_t *character) {
     }
 }
 
+void updateConsumables(character_t *character,int *moveNum) {
+    moveNum++;
+    //printf("moveNum: %d\n",*moveNum);
+    //printf("moveDived2: %d\n",(*moveNum%2));
+    if (((*moveNum)%2)==0) {
+        if ((character->food) != 0) {
+            character->food -= 1;
+            printf("foodNum: %d",character->food);
+        }
+        else {
+            character->health -= 1;
+        }
+    }
+}
+
+void freeGameArr(char **gameArray, int ySpan) {
+    int i;
+    for (i=0;i<ySpan;i++) {
+        free(gameArray[i]);
+    }
+    free(gameArray);
+}
+
 int main() {
     //Initialise Time
     srand(time(NULL));
@@ -368,8 +389,7 @@ int main() {
         newUserPos = getUserMove(character,materialArr,gameXspan,gameYspan);
         updateUserInventory(character,gameArray,newUserPos);
         updateUserPosition(gameArray,newUserPos,character);
-
         system("cls"); //Clear the console before next print.
     }
-
+    freeGameArr(gameArray,gameYspan);
 }
