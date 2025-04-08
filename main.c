@@ -33,6 +33,7 @@ struct character {
     pos_t playerPos;
     int food;
     int health;
+    int playerMove;
     invItem_t inventory[NUMITEMS];
 };
 typedef struct character character_t;
@@ -175,6 +176,7 @@ void initCharacter(char **gameArr,character_t *character,material_t *materialArr
     //Initialise consumable resource
     character->food = 10;
     character->health = 3;
+    character->playerMove = 0;
 
     //Place character in gameArr
     gameArr[character->playerPos.y][character->playerPos.x] = '@';
@@ -340,17 +342,16 @@ void updateUserPosition(char **gameArr,pos_t newPos,character_t *character) {
     }
 }
 
-void updateConsumables(character_t *character,int *moveNum) {
-    moveNum++;
-    //printf("moveNum: %d\n",*moveNum);
-    //printf("moveDived2: %d\n",(*moveNum%2));
-    if (((*moveNum)%2)==0) {
+void updateConsumables(character_t *character) {
+    character->playerMove += 1;
+    if (((character->playerMove)%2)==0) {
         if ((character->food) != 0) {
             character->food -= 1;
-            printf("foodNum: %d",character->food);
+            printf("foodNum: %d\n",character->food);
         }
         else {
             character->health -= 1;
+            printf("heath: %d\n",character->health);
         }
     }
 }
@@ -390,6 +391,8 @@ int main() {
         updateUserInventory(character,gameArray,newUserPos);
         updateUserPosition(gameArray,newUserPos,character);
         system("cls"); //Clear the console before next print.
+        updateConsumables(character);
     }
     freeGameArr(gameArray,gameYspan);
+
 }
