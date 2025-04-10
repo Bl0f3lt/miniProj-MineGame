@@ -125,7 +125,48 @@ void setMineableObjects(char **gameArray, material_t *materialArr, int gameXspan
 }
 
 void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspan,int gameYspan) {
-    printf("setImpassableObjects");
+    int i,j,k,randNum;
+    material_t impassableMat;
+    for (k=0; k<NUMITEMS; k++) {
+        if (materialArr[k].mineable == 0) {
+            impassableMat = materialArr[k];
+        }
+    }
+    printf("impassable mat: %c",impassableMat.ident);
+
+    for (j=0;j<gameYspan;j++) {
+        for (i=0;i<gameXspan;i++) {
+            randNum = rand() % 100;
+            if (randNum > 95) {
+                gameArray[j][i] = impassableMat.ident;
+            }
+        }
+    }
+
+    int rowChance = 2;
+    for (j=0;j<gameYspan;j++) {
+        for (i=0; i<gameXspan;i++) {
+            if (gameArray[j][i] == impassableMat.ident) {
+                randNum = rand() % rowChance;
+                if (randNum < 4) {
+                    if ((i+1)<gameXspan) {
+                        gameArray[j][i+1] = impassableMat.ident;
+                    }
+                    else if ((j+1)<gameYspan) {
+                        gameArray[j+1][i] = impassableMat.ident;
+                    }
+                    else {
+                        break;
+                    }
+                    rowChance = rowChance + 2;
+
+                }
+                else {
+                    rowChance = 2;
+                }
+            }
+        }
+    }
 }
 
 void setGameArrayValues(char **gameArray,material_t *materialArr,int gameXspan,int gameYspan) {
