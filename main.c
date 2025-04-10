@@ -137,7 +137,7 @@ void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspa
     for (j=0;j<gameYspan;j++) {
         for (i=0;i<gameXspan;i++) {
             randNum = rand() % 100;
-            if (randNum > 95) {
+            if (randNum > 95) { //Value to determine frequency of clumps
                 gameArray[j][i] = impassableMat.ident;
             }
         }
@@ -148,7 +148,7 @@ void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspa
         for (i=0; i<gameXspan;i++) {
             if (gameArray[j][i] == impassableMat.ident) {
                 randNum = rand() % rowChance;
-                if (randNum < 4) {
+                if (randNum < 4) { //Number to set the size of impassable clumps
                     if ((i+1)<gameXspan) {
                         gameArray[j][i+1] = impassableMat.ident;
                     }
