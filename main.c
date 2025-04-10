@@ -276,22 +276,22 @@ int checkValidMove(character_t *character,char userMove,int gameX,int gameY) {
     pos_t characterPos = character->playerPos;
 
     if (userMove == 'w') {
-        if (!((characterPos.y - 1)<0)) {
+        if ((characterPos.y - 1) >= 0) {
             return 1;
         }
     }
     else if (userMove == 'd') {
-        if (!((characterPos.x + 1)>gameX)) {
+        if ((characterPos.x + 1) <= gameX) {
             return 1;
         }
     }
     else if (userMove == 's') {
-        if (!((characterPos.y + 1)>gameY)) {
+        if ((characterPos.y + 1) <= gameY) {
             return 1;
         }
     }
     else if (userMove == 'a') {
-        if (!((characterPos.x - 1)<0)) {
+        if ((characterPos.x - 1) >= 0) {
             return 1;
         }
     }
