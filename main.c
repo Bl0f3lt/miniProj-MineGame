@@ -272,27 +272,35 @@ void displayGame(char **gameArray,character_t *character,int gameX,int gameY) {
     printf("Enter a move to play: ");
 }
 
-int checkValidMove(character_t *character,char userMove,int gameX,int gameY) {
+int checkValidMove(character_t *character,char userMove,char **gameArray,int gameX,int gameY) {
     pos_t characterPos = character->playerPos;
 
     if (userMove == 'w') {
         if ((characterPos.y - 1) >= 0) {
-            return 1;
+            if (gameArray[characterPos.y-1][characterPos.x] != 'B') {
+                return 1;
+            }
         }
     }
     else if (userMove == 'd') {
-        if ((characterPos.x + 1) <= gameX) {
-            return 1;
+        if ((characterPos.x + 1) < gameX) {
+            if (gameArray[characterPos.y][characterPos.x+1] != 'B') {
+                return 1;
+            }
         }
     }
     else if (userMove == 's') {
-        if ((characterPos.y + 1) <= gameY) {
-            return 1;
+        if ((characterPos.y + 1) < gameY) {
+            if (gameArray[characterPos.y+1][characterPos.x] != 'B') {
+                return 1;
+            }
         }
     }
     else if (userMove == 'a') {
         if ((characterPos.x - 1) >= 0) {
-            return 1;
+            if (gameArray[characterPos.y][characterPos.x-1] != 'B') {
+                return 1;
+            }
         }
     }
     else if (userMove == 'i') {
@@ -343,13 +351,13 @@ void displayUserInv(character_t *character,material_t *materialArr){
 
 }
 
-pos_t getUserMove(character_t *character,material_t *materialArr,int gameX,int gameY) {
+pos_t getUserMove(char **gameArray,character_t *character,material_t *materialArr,int gameX,int gameY) {
     char userEntry;
     int validEntry = 0;
     fseek(stdin,0,SEEK_END);
     while (!validEntry) {
         scanf("%c",&userEntry);
-        if (!checkValidMove(character,userEntry,gameX,gameY)) {
+        if (!checkValidMove(character,userEntry,gameArray,gameX,gameY)) {
             printf("Not valid input! Try again: ");
             fseek(stdin,0,SEEK_END); //Clear input buffer to accept another input. Prevents looping.
         }
@@ -441,7 +449,7 @@ int main() {
     //main game loop
     while (character->health>0) {
         displayGame(gameArray,character,gameXspan,gameYspan);
-        newUserPos = getUserMove(character,materialArr,gameXspan,gameYspan);
+        newUserPos = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
         updateUserInventory(character,gameArray,newUserPos);
         updateUserPosition(gameArray,newUserPos,character);
         system("cls"); //Clear the console before next print.
