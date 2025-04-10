@@ -4,7 +4,7 @@
 #include <time.h>
 
 //Constant value equal to number of collectable items in the Game.
-#define NUMITEMS 3
+#define NUMITEMS 4
 
 //Defining structures
 struct pos {
@@ -60,6 +60,7 @@ material_t *generateMaterials() {
     setMaterial(&materialArr[0],'.',"air",100,0,0,1);
     setMaterial(&materialArr[1],'e',"emerald",10,25,10,1);
     setMaterial(&materialArr[2],'d',"diamond",5,40,5,1);
+    setMaterial(&materialArr[3],'B',"bedrock",10,100,25,0);
 
     return materialArr;
 }
@@ -83,7 +84,9 @@ int getTotalWeight(material_t *materialArr) {
     int totalWeight=0;
     int i;
     for (i=0;i<NUMITEMS;i++) {
-        totalWeight += materialArr[i].weight;
+        if (materialArr[i].mineable == 1) {
+            totalWeight += materialArr[i].weight;
+        }
     }
     return totalWeight;
 }
@@ -92,17 +95,19 @@ char *generateWeightArray(material_t *materialArr, int totalWeight) {
     char *weightArray = malloc(totalWeight*sizeof(char));
     int materialIndex,weightIndex,lastIndex=0,currentMatWeight;
     for (materialIndex=0;materialIndex<NUMITEMS;materialIndex++) {
-        currentMatWeight = materialArr[materialIndex].weight;
-        char currentMatIdent = materialArr[materialIndex].ident;
-        for (weightIndex=0;weightIndex<currentMatWeight;weightIndex++) {
-            weightArray[lastIndex] = currentMatIdent;
-            lastIndex++;
+        if (materialArr[materialIndex].mineable == 1) {
+            currentMatWeight = materialArr[materialIndex].weight;
+            char currentMatIdent = materialArr[materialIndex].ident;
+            for (weightIndex=0;weightIndex<currentMatWeight;weightIndex++) {
+                weightArray[lastIndex] = currentMatIdent;
+                lastIndex++;
+            }
         }
     }
     return weightArray;
 }
 
-void setGameArrayValues(char **gameArray,material_t *materialArr,int gameXspan,int gameYspan) {
+void setMineableObjects(char **gameArray, material_t *materialArr, int gameXspan,int gameYspan) {
     int totalWeight;
     totalWeight = getTotalWeight(materialArr);
     char *weightedMaterialArr;
@@ -119,6 +124,14 @@ void setGameArrayValues(char **gameArray,material_t *materialArr,int gameXspan,i
     }
 }
 
+void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspan,int gameYspan) {
+    printf("setImpassableObjects");
+}
+
+void setGameArrayValues(char **gameArray,material_t *materialArr,int gameXspan,int gameYspan) {
+    setMineableObjects(gameArray,materialArr,gameXspan,gameYspan);
+    setImpassableObjects(gameArray,materialArr,gameXspan,gameYspan);
+}
 
 
 char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
