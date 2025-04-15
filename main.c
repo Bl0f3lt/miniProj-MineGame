@@ -444,7 +444,43 @@ void freeGameArr(char **gameArray, int ySpan) {
     free(gameArray);
 }
 
+char runGame(material_t *materialArr) {
+    //Manual definition of size for now. May change to add difficulty.
+    int gameXspan,gameYspan;
+    gameXspan = 12;
+    gameYspan = 12;
 
+    //GameArray generation
+    char **gameArray;
+    gameArray = generateWorld(gameXspan,gameYspan,materialArr);
+
+    //Generate character
+    character_t *character = malloc(sizeof(character_t));
+    if (!character) {
+        printf("Error in allocation of memory for character!\n");
+        return 'c';
+    }
+
+    initCharacter(gameArray,character,materialArr,gameXspan);
+
+
+    move_t newMove;
+    //main game loop
+    while (character->health>0) {
+        displayGame(gameArray,character,gameXspan,gameYspan);
+        newMove = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
+        if (newMove.userEntry == 'r' && character->playerMove == 0) {
+            return 'r';
+        }
+        updateUserInventory(character,gameArray,newMove.newPos);
+        updateUserPosition(gameArray,newMove.newPos,character);
+        system("cls"); //Clear the console before next print.
+        updateConsumables(character);
+    }
+    freeGameArr(gameArray,gameYspan);
+    free(character);
+    return 'd';
+}
 
 int main() {
     //Initialise Time
@@ -454,6 +490,24 @@ int main() {
     material_t *materialArr;
     materialArr = generateMaterials();
 
+    //Exit code table:
+    // s: safe - normal running
+    // d: player death
+    // r: player game reset
+    // c: game crash.
+
+    char exitCode = 's';
+
+    //Main game below.
+    while (exitCode == 's' || exitCode == 'r') {
+        exitCode = runGame(materialArr);
+    }
+
+    //exitCode = runGame(materialArr);
+
+
+
+    /*
     //Manual definition of size for now. May change to add difficulty.
     int gameXspan,gameYspan;
     gameXspan = 12;
@@ -482,5 +536,5 @@ int main() {
         updateConsumables(character);
     }
     freeGameArr(gameArray,gameYspan);
-
+    */
 }
