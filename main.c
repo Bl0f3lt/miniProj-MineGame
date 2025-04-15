@@ -13,6 +13,12 @@ struct pos {
 };
 typedef struct pos pos_t;
 
+struct move {
+    pos_t newPos;
+    char userEntry;
+};
+typedef struct move move_t;
+
 struct material {
     char ident;
     char name[10];
@@ -144,7 +150,7 @@ void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspa
     }
 
     int rowChance = 2;
-    for (j=0;j<gameYspan;j++) {
+    for (j=1;j<gameYspan;j++) {
         for (i=0; i<gameXspan;i++) {
             if (gameArray[j][i] == impassableMat.ident) {
                 randNum = rand() % rowChance;
@@ -306,31 +312,43 @@ int checkValidMove(character_t *character,char userMove,char **gameArray,int gam
     else if (userMove == 'i') {
         return 1;
     }
+    else if (userMove == 'r') {
+        return 1;
+    }
     return 0;
 
 }
 
-pos_t getNewUserPos(char userEntry,character_t *character) {
-    pos_t newPos;
-    newPos = character->playerPos;
+move_t getNewUserMove(char userEntry,character_t *character) {
+    move_t newMove;
+    newMove.newPos = character->playerPos;
     if (userEntry == 'w') {
-        newPos.y -= 1;
-        return newPos;
+        newMove.newPos.y -= 1;
+        newMove.userEntry = 'w';
+        return newMove;
     }
     else if (userEntry == 'd') {
-        newPos.x += 1;
-        return newPos;
+        newMove.newPos.x += 1;
+        newMove.userEntry = 'd';
+        return newMove;
     }
     else if (userEntry == 's') {
-        newPos.y += 1;
-        return newPos;
+        newMove.newPos.y += 1;
+        newMove.userEntry = 's';
+        return newMove;
     }
     else if (userEntry == 'a') {
-        newPos.x -= 1;
-        return newPos;
+        newMove.newPos.x -= 1;
+        newMove.userEntry = 'a';
+        return newMove;
     }
     else if (userEntry == 'i') {
-        return newPos;
+        newMove.userEntry = 'i';
+        return newMove;
+    }
+    else if (userEntry == 'r') {
+        newMove.userEntry = 'r';
+        return newMove;
     }
 }
 
@@ -351,7 +369,7 @@ void displayUserInv(character_t *character,material_t *materialArr){
 
 }
 
-pos_t getUserMove(char **gameArray,character_t *character,material_t *materialArr,int gameX,int gameY) {
+move_t getUserMove(char **gameArray,character_t *character,material_t *materialArr,int gameX,int gameY) {
     char userEntry;
     int validEntry = 0;
     fseek(stdin,0,SEEK_END);
@@ -369,8 +387,8 @@ pos_t getUserMove(char **gameArray,character_t *character,material_t *materialAr
         displayUserInv(character,materialArr);
     }
 
-    pos_t newPos = getNewUserPos(userEntry,character);
-    return newPos;
+    move_t newMove = getNewUserMove(userEntry,character);
+    return newMove;
 }
 
 //Check against design below:
@@ -426,11 +444,13 @@ void freeGameArr(char **gameArray, int ySpan) {
     free(gameArray);
 }
 
+
+
 int main() {
     //Initialise Time
     srand(time(NULL));
 
-    //Test material array generation.
+    //Material array generation.
     material_t *materialArr;
     materialArr = generateMaterials();
 
@@ -439,19 +459,25 @@ int main() {
     gameXspan = 12;
     gameYspan = 12;
 
+    //GameArray generation
     char **gameArray;
     gameArray = generateWorld(gameXspan,gameYspan,materialArr);
 
+    //Generate character
     character_t *character;
     initCharacter(gameArray,character,materialArr,gameXspan);
 
-    pos_t newUserPos;
+
+    move_t newMove;
     //main game loop
     while (character->health>0) {
         displayGame(gameArray,character,gameXspan,gameYspan);
-        newUserPos = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
-        updateUserInventory(character,gameArray,newUserPos);
-        updateUserPosition(gameArray,newUserPos,character);
+        newMove = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
+        if (newMove.userEntry == 'r' && character->playerMove == 0) {
+            break;
+        }
+        updateUserInventory(character,gameArray,newMove.newPos);
+        updateUserPosition(gameArray,newMove.newPos,character);
         system("cls"); //Clear the console before next print.
         updateConsumables(character);
     }
