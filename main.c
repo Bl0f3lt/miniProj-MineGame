@@ -44,6 +44,14 @@ struct character {
 };
 typedef struct character character_t;
 
+struct shopItem {
+    int itemIdent;
+    char itemName[10];
+    int cost;
+    int foodValue;
+};
+typedef struct shopItem shopItem_t;
+
 //Functions
 
 void setMaterial(material_t *materialPointer, char ident, char name[10], int weight, int value, int size, int mineable) {
@@ -70,6 +78,8 @@ material_t *generateMaterials() {
 
     return materialArr;
 }
+
+
 
 char **generate2Darr(int x,int y) {
     char** array;
