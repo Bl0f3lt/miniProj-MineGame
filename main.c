@@ -369,6 +369,10 @@ void displayUserInv(character_t *character,material_t *materialArr){
 
 }
 
+void shop() {
+
+}
+
 move_t getUserMove(char **gameArray,character_t *character,material_t *materialArr,int gameX,int gameY) {
     char userEntry;
     int validEntry = 0;
@@ -383,9 +387,11 @@ move_t getUserMove(char **gameArray,character_t *character,material_t *materialA
             validEntry = 1;
         }
     }
+    /*
     if (userEntry == 'i') {
         displayUserInv(character,materialArr);
     }
+    */
 
     move_t newMove = getNewUserMove(userEntry,character);
     return newMove;
@@ -472,10 +478,27 @@ char runGame(material_t *materialArr) {
         if (newMove.userEntry == 'r' && character->playerMove == 0) {
             return 'r';
         }
+        else if ((newMove.userEntry != 'w' )|| (newMove.userEntry != 'a') || (newMove.userEntry != 'd') || (newMove.userEntry != 's')) {
+            //shop,inv
+            if (newMove.userEntry == 'i') {
+                displayUserInv(character,materialArr);
+            }
+            else if (newMove.userEntry == 's') {
+                shop();
+            }
+        }
+        else {
+            updateUserInventory(character,gameArray,newMove.newPos);
+            updateUserPosition(gameArray,newMove.newPos,character);
+            system("cls"); //Clear the console before next print.
+            updateConsumables(character);
+        }
+        /*
         updateUserInventory(character,gameArray,newMove.newPos);
         updateUserPosition(gameArray,newMove.newPos,character);
         system("cls"); //Clear the console before next print.
         updateConsumables(character);
+        */
     }
     freeGameArr(gameArray,gameYspan);
     free(character);
@@ -502,39 +525,4 @@ int main() {
     while (exitCode == 's' || exitCode == 'r') {
         exitCode = runGame(materialArr);
     }
-
-    //exitCode = runGame(materialArr);
-
-
-
-    /*
-    //Manual definition of size for now. May change to add difficulty.
-    int gameXspan,gameYspan;
-    gameXspan = 12;
-    gameYspan = 12;
-
-    //GameArray generation
-    char **gameArray;
-    gameArray = generateWorld(gameXspan,gameYspan,materialArr);
-
-    //Generate character
-    character_t *character;
-    initCharacter(gameArray,character,materialArr,gameXspan);
-
-
-    move_t newMove;
-    //main game loop
-    while (character->health>0) {
-        displayGame(gameArray,character,gameXspan,gameYspan);
-        newMove = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
-        if (newMove.userEntry == 'r' && character->playerMove == 0) {
-            break;
-        }
-        updateUserInventory(character,gameArray,newMove.newPos);
-        updateUserPosition(gameArray,newMove.newPos,character);
-        system("cls"); //Clear the console before next print.
-        updateConsumables(character);
-    }
-    freeGameArr(gameArray,gameYspan);
-    */
 }
