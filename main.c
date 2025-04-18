@@ -30,21 +30,11 @@ struct material {
 };
 typedef struct material material_t;
 
-struct invItem {
+struct materialInvItem {
     material_t* invMaterial;
     int quant;
 };
-typedef struct invItem invItem_t;
-
-struct character {
-    pos_t playerPos;
-    int food;
-    int health;
-    int playerMove;
-    int money;
-    invItem_t inventory[NUM_MATERIALS];
-};
-typedef struct character character_t;
+typedef struct materialInvItem materialInvItem_t;
 
 struct shopItem {
     int itemIdent;
@@ -54,6 +44,28 @@ struct shopItem {
 };
 typedef struct shopItem shopItem_t;
 
+struct itemInvItem {
+    shopItem_t* invItem;
+    int quant;
+};
+typedef struct itemInvItem itemInvItem_t;
+
+struct buyValid {
+    int valid;
+    char reason[20];
+};
+typedef struct buyValid buyValid_t;
+
+struct character {
+    pos_t playerPos;
+    int food;
+    int health;
+    int playerMove;
+    int money;
+    materialInvItem_t materialInventory[NUM_MATERIALS];
+    itemInvItem_t itemInventory[NUM_SHOP_ITEMS];
+};
+typedef struct character character_t;
 //Functions
 
 void setMaterial(material_t *materialPointer, char ident, char name[10], int weight, int value, int size, int mineable) {
@@ -244,23 +256,27 @@ pos_t getRandStartPos(int gameXspan) {
     return getRandPos(gameXspan,0);
 }
 
-void initInvArr(character_t *character,material_t *materialArr) {
+void initInvArr(character_t *character,material_t *materialArr,shopItem_t *shopItemArr) {
     int i;
     for (i=0;i<NUM_MATERIALS;i++) {
-        character->inventory[i].invMaterial = &materialArr[i];
-        character->inventory[i].quant = 0;
+        character->materialInventory[i].invMaterial = &materialArr[i];
+        character->materialInventory[i].quant = 0;
+    }
+    for (i=0;i<NUM_SHOP_ITEMS;i++) {
+        character->itemInventory[i].invItem = &shopItemArr[i];
+        character->itemInventory[i].quant = 0;
     }
 }
 
-void initCharacter(char **gameArr,character_t *character,material_t *materialArr,int gameXspan) {
+void initCharacter(char **gameArr,character_t *character,material_t *materialArr,shopItem_t *shopItemArr, int gameXspan) {
     //Generate random start position
     pos_t randPos = getRandStartPos(gameXspan);
     //Assign rand start pos to character.
     character->playerPos.x = randPos.x;
     character->playerPos.y = randPos.y;
 
-    //Initialise the player inventory
-    initInvArr(character,materialArr);
+    //Initialise the player materialInventory
+    initInvArr(character,materialArr,shopItemArr);
 
     //Initialise consumable resource
     character->food = 10;
@@ -387,10 +403,10 @@ void displayUserInv(character_t *character,material_t *materialArr){
     system("cls");
     fseek(stdin,0,SEEK_END);
     for (i=0;i<NUM_MATERIALS;i++) {
-        if (character->inventory[i].quant > 0 && character->inventory[i].invMaterial->ident != '.') {
-            printf("%s: %d\nvalue: %d\n\n",character->inventory[i].invMaterial->name,
-                   character->inventory[i].quant,
-                   (character->inventory[i].invMaterial->value)*(character->inventory[i].quant));
+        if (character->materialInventory[i].quant > 0 && character->materialInventory[i].invMaterial->ident != '.') {
+            printf("%s: %d\nvalue: %d\n\n",character->materialInventory[i].invMaterial->name,
+                   character->materialInventory[i].quant,
+                   (character->materialInventory[i].invMaterial->value)*(character->materialInventory[i].quant));
         }
     }
     printf("Press enter to continue\n");
@@ -420,9 +436,9 @@ int checkValidShopOpt(int userEntry) {
 void sellMaterials(character_t *character) {
     int i;
     for (i=0;i<NUM_MATERIALS;i++) {
-        if (character->inventory[i].quant > 0 && character->inventory[i].invMaterial->ident != '.' && character->inventory[i].invMaterial->mineable == 1) {
-            character->money += (character->inventory[i].quant)*(character->inventory[i].invMaterial->value);
-            character->inventory[i].quant = 0;
+        if (character->materialInventory[i].quant > 0 && character->materialInventory[i].invMaterial->ident != '.' && character->materialInventory[i].invMaterial->mineable == 1) {
+            character->money += (character->materialInventory[i].quant)*(character->materialInventory[i].invMaterial->value);
+            character->materialInventory[i].quant = 0;
         }
     }
 }
@@ -434,13 +450,54 @@ void displayShopItems(shopItem_t *shopItemArr) {
     for (i=0;i<NUM_SHOP_ITEMS;i++) {
         printf("Item %d: %s\n",i,shopItemArr[i].itemName);
     }
+}
 
-    int validOption = 0;
-    int userEntry;
-    while (!validOption) {
-        scanf("%d",userEntry);
-        if (!checkValidBuyOption())
+buyValid_t checkValidBuyOption(character_t *character, shopItem_t *shopItemArr, int userSelection) {
+    int i;
+    buyValid_t validityResult;
+    for (i=0;i<NUM_SHOP_ITEMS;i++) {
+        if (shopItemArr[i].itemIdent == userSelection) {
+            if (character->money >= shopItemArr[i].cost) {
+                validityResult.valid = 1;
+                strcpy(validityResult.reason,"Success");
+                return validityResult;
+            }
+            else {
+                validityResult.valid = 0;
+                strcpy(validityResult.reason,"Insufficient Funds!");
+                return validityResult;
+            }
+        }
+
     }
+    validityResult.valid = 0;
+    strcpy(validityResult.reason,"Item not found!");
+    return validityResult;
+}
+
+void buyShopItem(shopItem_t *shopItemArr, character_t *character) {
+    int userEntry;
+    buyValid_t validityResult;
+    validityResult.valid = 0;
+    while (!validityResult.valid) {
+        fseek(stdin,0,SEEK_END);
+        scanf("%d",userEntry);
+        validityResult = checkValidBuyOption(character,shopItemArr,userEntry);
+        if (!validityResult.valid) {
+            printf("%s\n",validityResult.reason);
+            printf("Please enter another number!");
+            fseek(stdin,0,SEEK_END);
+        }
+    }
+
+    shopItem_t itemBrought = shopItemArr[userEntry-1];
+    if (itemBrought.foodValue > 0) {
+        character->food += itemBrought.foodValue;
+    }
+    else {
+        character->itemInventory[userEntry-1].quant += 1;
+    }
+
 }
 
 void shop(shopItem_t *shopItemArr, character_t *character) {
@@ -465,8 +522,8 @@ void shop(shopItem_t *shopItemArr, character_t *character) {
             sellMaterials(character);
             shop(shopItemArr, character);
         case 2:
-            displayShopItems();
-            buyShopItem();
+            displayShopItems(shopItemArr);
+            buyShopItem(shopItemArr,character);
             shop(shopItemArr, character);
         case 3:
             break;
@@ -508,8 +565,8 @@ char getItemToCollect(char **gameArr,pos_t newPosition) {
 void updateMaterialQuant(character_t *character,char material) {
     int i;
     for (i=0;i<NUM_MATERIALS;i++) {
-        if (character->inventory[i].invMaterial->ident == material) {
-            character->inventory[i].quant += 1;
+        if (character->materialInventory[i].invMaterial->ident == material) {
+            character->materialInventory[i].quant += 1;
             break;
         }
     }
@@ -569,7 +626,7 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
         return 'c';
     }
 
-    initCharacter(gameArray,character,materialArr,gameXspan);
+    initCharacter(gameArray,character,materialArr,shopItemArr,gameXspan);
 
 
     move_t newMove;
@@ -586,7 +643,7 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
                 displayUserInv(character,materialArr);
             }
             else if (newMove.userEntry == 's') {
-                shop();
+                shop(shopItemArr,character);
             }
         }
         else {
