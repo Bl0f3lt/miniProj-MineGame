@@ -358,6 +358,9 @@ int checkValidMove(character_t *character,char userMove,char **gameArray,int gam
     else if (userMove == 'i') {
         return 1;
     }
+    else if (userMove == 'b') {
+        return 1;
+    }
     else if (userMove == 'r') {
         return 1;
     }
@@ -390,6 +393,10 @@ move_t getNewUserMove(char userEntry,character_t *character) {
     }
     else if (userEntry == 'i') {
         newMove.userEntry = 'i';
+        return newMove;
+    }
+    else if (userEntry == 'b') {
+        newMove.userEntry = 'b';
         return newMove;
     }
     else if (userEntry == 'r') {
@@ -436,6 +443,7 @@ int checkValidShopOpt(int userEntry) {
 void sellMaterials(character_t *character) {
     int i;
     for (i=0;i<NUM_MATERIALS;i++) {
+        printf("Selling items!\n");
         if (character->materialInventory[i].quant > 0 && character->materialInventory[i].invMaterial->ident != '.' && character->materialInventory[i].invMaterial->mineable == 1) {
             character->money += (character->materialInventory[i].quant)*(character->materialInventory[i].invMaterial->value);
             character->materialInventory[i].quant = 0;
@@ -637,16 +645,13 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
         if (newMove.userEntry == 'r' && character->playerMove == 0) {
             return 'r';
         }
-        else if ((newMove.userEntry != 'w' )|| (newMove.userEntry != 'a') || (newMove.userEntry != 'd') || (newMove.userEntry != 's')) {
-            //shop,inv
-            if (newMove.userEntry == 'i') {
-                displayUserInv(character,materialArr);
-            }
-            else if (newMove.userEntry == 's') {
-                shop(shopItemArr,character);
-            }
+        else if (newMove.userEntry == 'i') {
+            displayUserInv(character,materialArr);
         }
-        else {
+        else if (newMove.userEntry == 'b') {
+            shop(shopItemArr,character);
+        }
+        else if (newMove.userEntry == 'w' || newMove.userEntry == 'a' || newMove.userEntry == 'd' || newMove.userEntry == 's'){
             updateUserInventory(character,gameArray,newMove.newPos);
             updateUserPosition(gameArray,newMove.newPos,character);
             system("cls"); //Clear the console before next print.
