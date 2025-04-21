@@ -422,9 +422,14 @@ void displayUserInv(character_t *character,material_t *materialArr){
 
 }
 
-void displayShopOptions() {
+void displayCharacterMoney(character_t *character) {
+    printf("Money Available: %d\n",character->money);
+}
+
+void displayShopOptions(character_t *character) {
     system("cls");
     printf("Welcome to the Shop!\n");
+    displayCharacterMoney(character);
     printf("Shop options: \n");
     printf("1: Sell Materials\n");
     printf("2: Buy Items\n");
@@ -452,12 +457,13 @@ void sellMaterials(character_t *character) {
     }
 }
 
-void displayShopItems(shopItem_t *shopItemArr) {
+void displayShopItems(shopItem_t *shopItemArr,character_t *character) {
     printf("Buy Items\n");
+    displayCharacterMoney(character);
     printf("Items available for purchase: \n");
     int i;
     for (i=0;i<NUM_SHOP_ITEMS;i++) {
-        printf("Item %d: %s\n",i,shopItemArr[i].itemName);
+        printf("Item %d: %s  cost: %d\n",i,shopItemArr[i].itemName,shopItemArr[i].cost);
     }
 }
 
@@ -506,15 +512,17 @@ void buyShopItem(shopItem_t *shopItemArr, character_t *character) {
     shopItem_t itemBrought = shopItemArr[userEntry];
     if (itemBrought.foodValue > 0 && validityResult.reason != "Insufficient Funds!") {
         character->food += itemBrought.foodValue;
+        character->money -= itemBrought.cost;
     }
     else if (validityResult.reason != "Insufficient Funds!") {
         character->itemInventory[userEntry-1].quant += 1;
+        character->money -= itemBrought.cost;
     }
 
 }
 
 void shop(shopItem_t *shopItemArr, character_t *character) {
-    displayShopOptions();
+    displayShopOptions(character);
     int validEntry = 0;
     int userSelection;
     fseek(stdin,0,SEEK_END);
@@ -536,7 +544,7 @@ void shop(shopItem_t *shopItemArr, character_t *character) {
             shop(shopItemArr, character);
             break;
         case 2:
-            displayShopItems(shopItemArr);
+            displayShopItems(shopItemArr,character);
             buyShopItem(shopItemArr,character);
             shop(shopItemArr, character);
             break;
