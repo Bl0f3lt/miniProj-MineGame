@@ -432,6 +432,7 @@ void displayShopOptions() {
 }
 
 int checkValidShopOpt(int userEntry) {
+    printf("Checking valid shop option\n");
     switch (userEntry) {
         case 1 ... 3:
             return 1;
@@ -442,8 +443,8 @@ int checkValidShopOpt(int userEntry) {
 
 void sellMaterials(character_t *character) {
     int i;
+    printf("Selling items!\n");
     for (i=0;i<NUM_MATERIALS;i++) {
-        printf("Selling items!\n");
         if (character->materialInventory[i].quant > 0 && character->materialInventory[i].invMaterial->ident != '.' && character->materialInventory[i].invMaterial->mineable == 1) {
             character->money += (character->materialInventory[i].quant)*(character->materialInventory[i].invMaterial->value);
             character->materialInventory[i].quant = 0;
@@ -464,7 +465,7 @@ buyValid_t checkValidBuyOption(character_t *character, shopItem_t *shopItemArr, 
     int i;
     buyValid_t validityResult;
     for (i=0;i<NUM_SHOP_ITEMS;i++) {
-        if (shopItemArr[i].itemIdent == userSelection) {
+        if (shopItemArr[i].itemIdent-1 == userSelection) {
             if (character->money >= shopItemArr[i].cost) {
                 validityResult.valid = 1;
                 strcpy(validityResult.reason,"Success");
@@ -489,20 +490,24 @@ void buyShopItem(shopItem_t *shopItemArr, character_t *character) {
     validityResult.valid = 0;
     while (!validityResult.valid) {
         fseek(stdin,0,SEEK_END);
-        scanf("%d",userEntry);
+        scanf("%d",&userEntry);
         validityResult = checkValidBuyOption(character,shopItemArr,userEntry);
-        if (!validityResult.valid) {
+        if (!validityResult.valid && validityResult.reason == "Insufficient Funds!") {
             printf("%s\n",validityResult.reason);
-            printf("Please enter another number!");
+            validityResult.valid = 1;
+            fseek(stdin,0,SEEK_END);
+        }
+        else if (!validityResult.valid) {
+            printf("%s\n",validityResult.reason);
             fseek(stdin,0,SEEK_END);
         }
     }
 
-    shopItem_t itemBrought = shopItemArr[userEntry-1];
-    if (itemBrought.foodValue > 0) {
+    shopItem_t itemBrought = shopItemArr[userEntry];
+    if (itemBrought.foodValue > 0 && validityResult.reason != "Insufficient Funds!") {
         character->food += itemBrought.foodValue;
     }
-    else {
+    else if (validityResult.reason != "Insufficient Funds!") {
         character->itemInventory[userEntry-1].quant += 1;
     }
 
@@ -515,7 +520,7 @@ void shop(shopItem_t *shopItemArr, character_t *character) {
     fseek(stdin,0,SEEK_END);
 
     while (!validEntry) {
-        scanf("%d",userSelection);
+        scanf("%d",&userSelection);
         if (!checkValidShopOpt(userSelection)) {
             printf("Invalid shop option\n");
             fseek(stdin,0,SEEK_END);
@@ -529,10 +534,12 @@ void shop(shopItem_t *shopItemArr, character_t *character) {
         case 1:
             sellMaterials(character);
             shop(shopItemArr, character);
+            break;
         case 2:
             displayShopItems(shopItemArr);
             buyShopItem(shopItemArr,character);
             shop(shopItemArr, character);
+            break;
         case 3:
             break;
     }
