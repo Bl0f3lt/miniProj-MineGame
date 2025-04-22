@@ -461,9 +461,10 @@ void displayShopItems(shopItem_t *shopItemArr,character_t *character) {
     printf("Buy Items\n");
     displayCharacterMoney(character);
     printf("Items available for purchase: \n");
+    printf("0: Exit Shop\n");
     int i;
     for (i=0;i<NUM_SHOP_ITEMS;i++) {
-        printf("Item %d: %s  cost: %d\n",i,shopItemArr[i].itemName,shopItemArr[i].cost);
+        printf("Item %d: %s  cost: %d\n",i+1,shopItemArr[i].itemName,shopItemArr[i].cost);
     }
 }
 
@@ -471,7 +472,7 @@ buyValid_t checkValidBuyOption(character_t *character, shopItem_t *shopItemArr, 
     int i;
     buyValid_t validityResult;
     for (i=0;i<NUM_SHOP_ITEMS;i++) {
-        if (shopItemArr[i].itemIdent-1 == userSelection) {
+        if (shopItemArr[i].itemIdent == userSelection) {
             if (character->money >= shopItemArr[i].cost) {
                 validityResult.valid = 1;
                 strcpy(validityResult.reason,"Success");
@@ -484,6 +485,10 @@ buyValid_t checkValidBuyOption(character_t *character, shopItem_t *shopItemArr, 
             }
         }
 
+    }
+    if (userSelection == 0) {
+        validityResult.valid = 1;
+        return validityResult;
     }
     validityResult.valid = 0;
     strcpy(validityResult.reason,"Item not found!");
@@ -508,15 +513,19 @@ void buyShopItem(shopItem_t *shopItemArr, character_t *character) {
             fseek(stdin,0,SEEK_END);
         }
     }
-
-    shopItem_t itemBrought = shopItemArr[userEntry];
-    if (itemBrought.foodValue > 0 && validityResult.reason != "Insufficient Funds!") {
-        character->food += itemBrought.foodValue;
-        character->money -= itemBrought.cost;
+    if (userEntry != 0) {
+        shopItem_t itemBrought = shopItemArr[userEntry-1];
+        if (itemBrought.foodValue > 0 && validityResult.reason != "Insufficient Funds!") {
+            character->food += itemBrought.foodValue;
+            character->money -= itemBrought.cost;
+        }
+        else if (validityResult.reason != "Insufficient Funds!") {
+            character->itemInventory[userEntry-1].quant += 1;
+            character->money -= itemBrought.cost;
+        }
     }
-    else if (validityResult.reason != "Insufficient Funds!") {
-        character->itemInventory[userEntry-1].quant += 1;
-        character->money -= itemBrought.cost;
+    else {
+        printf("Returning to shop main page.\n");
     }
 
 }
@@ -672,12 +681,6 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
             system("cls"); //Clear the console before next print.
             updateConsumables(character);
         }
-        /*
-        updateUserInventory(character,gameArray,newMove.newPos);
-        updateUserPosition(gameArray,newMove.newPos,character);
-        system("cls"); //Clear the console before next print.
-        updateConsumables(character);
-        */
     }
     freeGameArr(gameArray,gameYspan);
     free(character);
