@@ -2,24 +2,29 @@
 #include <stdlib.h>
 #include <windows.system.h>
 #include <time.h>
+//24066799 MineGame C mini Project
 
 //Constant value equal to number of collectable items in the Game.
 #define NUM_MATERIALS 4
 #define NUM_SHOP_ITEMS 2
 
 //Defining structures
+
+//pos structure
 struct pos {
     int x;
     int y;
 };
 typedef struct pos pos_t;
 
+//move structure
 struct move {
     pos_t newPos;
     char userEntry;
 };
 typedef struct move move_t;
 
+//material strucutre
 struct material {
     char ident;
     char name[10];
@@ -30,12 +35,14 @@ struct material {
 };
 typedef struct material material_t;
 
+//materialInvItem structure
 struct materialInvItem {
     material_t* invMaterial;
     int quant;
 };
 typedef struct materialInvItem materialInvItem_t;
 
+//shopItem structure
 struct shopItem {
     int itemIdent;
     char itemName[10];
@@ -44,18 +51,21 @@ struct shopItem {
 };
 typedef struct shopItem shopItem_t;
 
+//itemInvItem structure
 struct itemInvItem {
     shopItem_t* invItem;
     int quant;
 };
 typedef struct itemInvItem itemInvItem_t;
 
+//buyValid Structure
 struct buyValid {
     int valid;
     char reason[20];
 };
 typedef struct buyValid buyValid_t;
 
+//Character Structure
 struct character {
     pos_t playerPos;
     int food;
@@ -69,6 +79,9 @@ typedef struct character character_t;
 //Functions
 
 void setMaterial(material_t *materialPointer, char ident, char name[10], int weight, int value, int size, int mineable) {
+    //setMaterial function
+    //Take passed data and pointer and assign attributes
+
     materialPointer->ident = ident;
     strcpy(materialPointer->name,name);
     materialPointer->weight = weight;
@@ -79,6 +92,11 @@ void setMaterial(material_t *materialPointer, char ident, char name[10], int wei
 
 
 material_t *generateMaterials() {
+    //Generate Materials Function
+    //generate an array of material_t
+    //Call setMaterial function with data to fill array
+    //return material_t array
+
     material_t *materialArr = malloc(NUM_MATERIALS*sizeof(material_t));
     if (!materialArr) {
         return NULL;
@@ -94,6 +112,9 @@ material_t *generateMaterials() {
 }
 
 void setShopItem(shopItem_t *shopPointer, int itemNum, char itemName[10], int cost, int foodValue) {
+    //Sets passed pointer attributes from passed data
+    //Uses pointers
+
     shopPointer->itemIdent = itemNum;
     strcpy(shopPointer->itemName,itemName);
     shopPointer->cost = cost;
@@ -101,6 +122,11 @@ void setShopItem(shopItem_t *shopPointer, int itemNum, char itemName[10], int co
 }
 
 shopItem_t *generateShopItems() {
+    //generate shop items function
+    //generates an array of shopItem_t
+    //Calls set shop items with each items details
+    //returns array of shopItem_t
+
     shopItem_t *shopArr = malloc(NUM_SHOP_ITEMS*sizeof(shopItem_t));
     if (!shopArr) {
         return NULL;
@@ -113,6 +139,9 @@ shopItem_t *generateShopItems() {
 }
 
 char **generate2Darr(int x,int y) {
+    //generate 2d array function
+    //generates a 2d character array with size of passed values
+
     char** array;
     int z;
 
@@ -128,6 +157,10 @@ char **generate2Darr(int x,int y) {
 }
 
 int getTotalWeight(material_t *materialArr) {
+    //get Total Weight function
+    //Finds sum of weights of all materials
+    //Returns integer
+
     int totalWeight=0;
     int i;
     for (i=0;i<NUM_MATERIALS;i++) {
@@ -139,6 +172,10 @@ int getTotalWeight(material_t *materialArr) {
 }
 
 char *generateWeightArray(material_t *materialArr, int totalWeight) {
+    //Creates an array with size of the sum of material weights
+    //Places the respective number of each material into the array
+    //Returns character array
+
     char *weightArray = malloc(totalWeight*sizeof(char));
     int materialIndex,weightIndex,lastIndex=0,currentMatWeight;
     for (materialIndex=0;materialIndex<NUM_MATERIALS;materialIndex++) {
@@ -155,6 +192,10 @@ char *generateWeightArray(material_t *materialArr, int totalWeight) {
 }
 
 void setMineableObjects(char **gameArray, material_t *materialArr, int gameXspan,int gameYspan) {
+    //Set the mineable objects
+    //Uses weighted random distribution
+    //Uses pointers
+
     int totalWeight;
     totalWeight = getTotalWeight(materialArr);
     char *weightedMaterialArr;
@@ -172,6 +213,11 @@ void setMineableObjects(char **gameArray, material_t *materialArr, int gameXspan
 }
 
 void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspan,int gameYspan) {
+    //Populate the gameArray with pseudo-random distribution of impassable objects
+    //Places initial randomly
+    //Uses second random dist to fill out other impassables
+    //Uses pointers
+
     int i,j,k,randNum;
     material_t impassableMat;
     for (k=0; k<NUM_MATERIALS; k++) {
@@ -217,12 +263,20 @@ void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspa
 }
 
 void setGameArrayValues(char **gameArray,material_t *materialArr,int gameXspan,int gameYspan) {
+    //set game array values function
+    //Call functions to populate the gameArray
+    //Uses pointers
+
     setMineableObjects(gameArray,materialArr,gameXspan,gameYspan);
     setImpassableObjects(gameArray,materialArr,gameXspan,gameYspan);
 }
 
 
 char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
+    //Generate World function
+    //Calls functions to generate and populate a 2d array.
+    //Returns a filled 2d array of characters
+
     char **gameArray;
     gameArray = generate2Darr(gameXspan,gameYspan);
 
@@ -239,6 +293,9 @@ char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
 //Character functs:
 
 pos_t getRandPos(xBound,yBound) {
+    //Generate a random x,y position
+    //returns intialised pos_t
+
     pos_t randPos;
     if (xBound == 0) {
         xBound++;
@@ -253,10 +310,15 @@ pos_t getRandPos(xBound,yBound) {
 }
 
 pos_t getRandStartPos(int gameXspan) {
+    //Gets a random position with y coord of 0.
     return getRandPos(gameXspan,0);
 }
 
 void initInvArr(character_t *character,material_t *materialArr,shopItem_t *shopItemArr) {
+    //Initialise character inventory arrays
+    //creates arrays of length of number of materials
+    //And array of number of shop items.
+
     int i;
     for (i=0;i<NUM_MATERIALS;i++) {
         character->materialInventory[i].invMaterial = &materialArr[i];
@@ -269,6 +331,10 @@ void initInvArr(character_t *character,material_t *materialArr,shopItem_t *shopI
 }
 
 void initCharacter(char **gameArr,character_t *character,material_t *materialArr,shopItem_t *shopItemArr, int gameXspan) {
+    //initCharacter function
+    //calls respective functions to initialise the character structure with passed data
+    //Uses pointers
+
     //Generate random start position
     pos_t randPos = getRandStartPos(gameXspan);
     //Assign rand start pos to character.
@@ -290,6 +356,9 @@ void initCharacter(char **gameArr,character_t *character,material_t *materialArr
 
 //Main game loop functions
 void displayWorld(char **gameArray,int gameX,int gameY) {
+    //display world function
+    //Takes the gameArray and iterates through printing each cell.
+
     int i,j;
     for (i=0;i<gameY;i++) {
         for (j=0;j<gameX;j++) {
@@ -300,6 +369,10 @@ void displayWorld(char **gameArray,int gameX,int gameY) {
 }
 
 void displayUserOptions(char **gameArray,character_t *character,int gameX,int gameY) {
+    //Display user options function
+    //Takes gameArray and character
+    //Displays the moves that the user can make
+
     pos_t characterPos = character->playerPos;
     if (!((characterPos.y - 1)<0)) {
         printf("up: w\n");
@@ -316,7 +389,9 @@ void displayUserOptions(char **gameArray,character_t *character,int gameX,int ga
 }
 
 void displayGame(char **gameArray,character_t *character,int gameX,int gameY) {
-    //Display game head, temp as filler text
+    //Display game function
+    //Displays the header and calls function to display gameArray and user options
+
     printf("Food: %d\tHealth: %d\n\n",character->food,character->health);
     displayWorld(gameArray,gameX,gameY);
     printf("\n");
@@ -325,6 +400,11 @@ void displayGame(char **gameArray,character_t *character,int gameX,int gameY) {
 }
 
 int checkValidMove(character_t *character,char userMove,char **gameArray,int gameX,int gameY) {
+    //check valid move function
+    //takes the character, usersMove, gameArr and game bounds
+    //Calculates if the move is allowed.
+    //returns 1 if a valid move and 0 if not.
+
     pos_t characterPos = character->playerPos;
 
     if (userMove == 'w') {
@@ -369,6 +449,12 @@ int checkValidMove(character_t *character,char userMove,char **gameArray,int gam
 }
 
 move_t getNewUserMove(char userEntry,character_t *character) {
+    //Get new user move function
+    //takes the users entry and character
+    //Computes new position based off the entered move
+    //returns the new positon and entered move in form of move_t
+    //if the move does not move the player simply returns existing position
+
     move_t newMove;
     newMove.newPos = character->playerPos;
     if (userEntry == 'w') {
@@ -406,6 +492,9 @@ move_t getNewUserMove(char userEntry,character_t *character) {
 }
 
 void displayUserInv(character_t *character,material_t *materialArr){
+    //Display user invenetory function
+    //Iterates through the users materials and prints the different materials and quantities
+
     int i;
     system("cls");
     fseek(stdin,0,SEEK_END);
@@ -423,10 +512,16 @@ void displayUserInv(character_t *character,material_t *materialArr){
 }
 
 void displayCharacterMoney(character_t *character) {
+    //Display character money function
+    //Takes pointer to character and prints available money
+
     printf("Money Available: %d\n",character->money);
 }
 
 void displayShopOptions(character_t *character) {
+    //Display shop options function
+    //clears console and prints shop options
+
     system("cls");
     printf("Welcome to the Shop!\n");
     displayCharacterMoney(character);
@@ -437,6 +532,9 @@ void displayShopOptions(character_t *character) {
 }
 
 int checkValidShopOpt(int userEntry) {
+    //Check function for shop options
+    //Takes players move and returns 1 if its valid and 0 if not.
+
     printf("Checking valid shop option\n");
     switch (userEntry) {
         case 1 ... 3:
@@ -447,6 +545,10 @@ int checkValidShopOpt(int userEntry) {
 }
 
 void sellMaterials(character_t *character) {
+    //Sell Materials Function
+    //takes pointer to character
+    //iterates through each material multiplying quantity by value and adding this to player funds.
+
     int i;
     printf("Selling items!\n");
     for (i=0;i<NUM_MATERIALS;i++) {
@@ -458,6 +560,9 @@ void sellMaterials(character_t *character) {
 }
 
 void displayShopItems(shopItem_t *shopItemArr,character_t *character) {
+    //displayShopItems function
+    //Prints the required info for the shop
+
     printf("Buy Items\n");
     displayCharacterMoney(character);
     printf("Items available for purchase: \n");
@@ -469,10 +574,18 @@ void displayShopItems(shopItem_t *shopItemArr,character_t *character) {
 }
 
 buyValid_t checkValidBuyOption(character_t *character, shopItem_t *shopItemArr, int userSelection) {
+    //check buy option is valid function
+    //Takes the users Selection and pointers to character and shopitems
+    //Checks that users entry exists in the avaialbe items
+    //checks user has available funds
+    //Returns the buyValid structure which contains if the op is valid and also the reason
+
+    //Check that the entry exists in the shop arr.
     int i;
     buyValid_t validityResult;
     for (i=0;i<NUM_SHOP_ITEMS;i++) {
         if (shopItemArr[i].itemIdent == userSelection) {
+            //Check user has funds
             if (character->money >= shopItemArr[i].cost) {
                 validityResult.valid = 1;
                 strcpy(validityResult.reason,"Success");
@@ -486,6 +599,7 @@ buyValid_t checkValidBuyOption(character_t *character, shopItem_t *shopItemArr, 
         }
 
     }
+    //Check if user selection to exit shop
     if (userSelection == 0) {
         validityResult.valid = 1;
         return validityResult;
@@ -496,6 +610,12 @@ buyValid_t checkValidBuyOption(character_t *character, shopItem_t *shopItemArr, 
 }
 
 void buyShopItem(shopItem_t *shopItemArr, character_t *character) {
+    //buy item function]
+    //Takes respective pointers to structures containing relevant info
+    //Takes user entry and checks if is a valid operation
+    //Updates pointers from result
+
+    //Entry checking
     int userEntry;
     buyValid_t validityResult;
     validityResult.valid = 0;
@@ -513,6 +633,9 @@ void buyShopItem(shopItem_t *shopItemArr, character_t *character) {
             fseek(stdin,0,SEEK_END);
         }
     }
+
+    //Update user inventory/stats with the item purchased
+    //userEntry of 0 means exit.
     if (userEntry != 0) {
         shopItem_t itemBrought = shopItemArr[userEntry-1];
         if (itemBrought.foodValue > 0 && validityResult.reason != "Insufficient Funds!") {
@@ -531,11 +654,16 @@ void buyShopItem(shopItem_t *shopItemArr, character_t *character) {
 }
 
 void shop(shopItem_t *shopItemArr, character_t *character) {
+    //Shop function
+    //Calls respective functions to operate shop
+    //Uses pointers to adjust data.
+
     displayShopOptions(character);
+
+    //User Entry Validation
     int validEntry = 0;
     int userSelection;
     fseek(stdin,0,SEEK_END);
-
     while (!validEntry) {
         scanf("%d",&userSelection);
         if (!checkValidShopOpt(userSelection)) {
@@ -547,6 +675,7 @@ void shop(shopItem_t *shopItemArr, character_t *character) {
         }
     }
 
+    //Compute user entry to correct function path.
     switch (userSelection) {
         case 1:
             sellMaterials(character);
