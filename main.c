@@ -740,6 +740,9 @@ void updateMaterialQuant(character_t *character,char material) {
 void updateUserInventory(character_t *character,char **gameArr,pos_t newPosition) {
     if (!((newPosition.x == character->playerPos.x) && (newPosition.y == character->playerPos.y))) {
         char material = getItemToCollect(gameArr,newPosition);
+        if (material != '.') {
+            character->materialRem--;
+        }
         updateMaterialQuant(character,material);
     }
 }
@@ -798,6 +801,7 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
     move_t newMove;
     //main game loop
     while (character->health>0) {
+        printf("Materials Remaining: %d\n",character->materialRem);
         displayGame(gameArray,character,gameXspan,gameYspan);
         newMove = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
         if (newMove.userEntry == 'r' && character->playerMove == 0) {
