@@ -72,6 +72,7 @@ struct character {
     int health;
     int playerMove;
     int money;
+    int materialRem;
     materialInvItem_t materialInventory[NUM_MATERIALS];
     itemInvItem_t itemInventory[NUM_SHOP_ITEMS];
 };
@@ -191,7 +192,7 @@ char *generateWeightArray(material_t *materialArr, int totalWeight) {
     return weightArray;
 }
 
-void setMineableObjects(char **gameArray, material_t *materialArr, int gameXspan,int gameYspan) {
+void setMineableObjects(char **gameArray, material_t *materialArr,character_t *character, int gameXspan,int gameYspan) {
     //Set the mineable objects
     //Uses weighted random distribution
     //Uses pointers
@@ -203,10 +204,14 @@ void setMineableObjects(char **gameArray, material_t *materialArr, int gameXspan
 
     int i,j,randInt;
     char randChar;
+    character->materialRem = 0;
     for (i=0;i<gameYspan;i++) {
         for (j=0;j<gameXspan;j++) {
             randInt = rand() % totalWeight;
             randChar = weightedMaterialArr[randInt];
+            if (randChar != '.') {
+                character->materialRem += 1;
+            }
             gameArray[i][j] = randChar;
         }
     }
@@ -225,7 +230,6 @@ void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspa
             impassableMat = materialArr[k];
         }
     }
-    printf("impassable mat: %c",impassableMat.ident);
 
     for (j=0;j<gameYspan;j++) {
         for (i=0;i<gameXspan;i++) {
@@ -262,17 +266,17 @@ void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspa
     }
 }
 
-void setGameArrayValues(char **gameArray,material_t *materialArr,int gameXspan,int gameYspan) {
+void setGameArrayValues(char **gameArray,material_t *materialArr,character_t *character,int gameXspan,int gameYspan) {
     //set game array values function
     //Call functions to populate the gameArray
     //Uses pointers
 
-    setMineableObjects(gameArray,materialArr,gameXspan,gameYspan);
+    setMineableObjects(gameArray,materialArr,character,gameXspan,gameYspan);
     setImpassableObjects(gameArray,materialArr,gameXspan,gameYspan);
 }
 
 
-char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
+char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr,character_t *character) {
     //Generate World function
     //Calls functions to generate and populate a 2d array.
     //Returns a filled 2d array of characters
@@ -286,7 +290,7 @@ char **generateWorld(int gameXspan,int gameYspan,material_t *materialArr) {
         return NULL;
     }
 
-    setGameArrayValues(gameArray,materialArr,gameXspan,gameYspan);
+    setGameArrayValues(gameArray,materialArr,character,gameXspan,gameYspan);
     return gameArray;
 }
 
@@ -776,17 +780,18 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
     gameXspan = 12;
     gameYspan = 12;
 
-    //GameArray generation
-    char **gameArray;
-    gameArray = generateWorld(gameXspan,gameYspan,materialArr);
-
-    //Generate character
+    //Generate character structure
     character_t *character = malloc(sizeof(character_t));
     if (!character) {
         printf("Error in allocation of memory for character!\n");
         return 'c';
     }
 
+    //GameArray generation
+    char **gameArray;
+    gameArray = generateWorld(gameXspan,gameYspan,materialArr,character);
+
+    //Instance character attributes
     initCharacter(gameArray,character,materialArr,shopItemArr,gameXspan);
 
 
