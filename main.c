@@ -799,8 +799,9 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
 
 
     move_t newMove;
+    int backOut = 0;
     //main game loop
-    while (character->health>0) {
+    while (character->health>0 && character->materialRem > 0 && !backOut) {
         printf("Materials Remaining: %d\n",character->materialRem);
         displayGame(gameArray,character,gameXspan,gameYspan);
         newMove = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
