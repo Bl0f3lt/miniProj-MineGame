@@ -73,7 +73,9 @@ struct character {
     int playerMove;
     int lastCollectionMove;
     int money;
+    int totalStartMaterials;
     int materialRem;
+    float playerScore;
     materialInvItem_t materialInventory[NUM_MATERIALS];
     itemInvItem_t itemInventory[NUM_SHOP_ITEMS];
 };
@@ -216,6 +218,7 @@ void setMineableObjects(char **gameArray, material_t *materialArr,character_t *c
             gameArray[i][j] = randChar;
         }
     }
+    character->totalStartMaterials = character->materialRem;
 }
 
 void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspan,int gameYspan) {
@@ -355,6 +358,7 @@ void initCharacter(char **gameArr,character_t *character,material_t *materialArr
     character->playerMove = 0;
     character->lastCollectionMove = 0;
     character->money = 0;
+    character->playerScore = 0;
 
     //Place character in gameArr
     gameArr[character->playerPos.y][character->playerPos.x] = '@';
@@ -770,6 +774,27 @@ void updateUserPosition(char **gameArr,pos_t newPos,character_t *character) {
     }
 }
 
+void setPlayerScore(character_t *character) {
+    float sumOfMoney = ((character->money) + ((character->food)*5));
+    float collectedMats;
+    printf("Sum of money is %f\n",sumOfMoney);
+    if (character->playerMove == 0) {
+        printf("Player Move is 0\n");
+        character->playerScore = 0;
+    }
+    else if ((character->health * 5)+(sumOfMoney) == 0) {
+        printf("health*5 + som = 0\n");
+        character->playerScore = 0;
+    }
+    else {
+        printf("Running formula\n");
+        printf("(pMove)*(h*5 + som) = %f\n",(character->playerMove) * ((character->health * 5)+(sumOfMoney)));
+        collectedMats = (character->totalStartMaterials - character->materialRem);
+        printf("Collected Mats is %f\n",collectedMats);
+        character->playerScore = collectedMats/(character->playerMove) * ((character->health * 5)+(sumOfMoney));
+    }
+}
+
 void updateConsumables(character_t *character) {
     character->playerMove += 1;
     if (((character->playerMove)%2)==0) {
@@ -817,8 +842,12 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
     int backOut = 0;
     //main game loop
     while (character->health>0 && character->materialRem > 0 && !backOut) {
+        printf("Tot Start: %d\n",character->totalStartMaterials);
         printf("Materials Remaining: %d\n",character->materialRem);
         printf("Current Move: %d   Last Collection Move: %d\n",character->playerMove,character->lastCollectionMove);
+        setPlayerScore(character);
+        printf("Score: %f\n",character->playerScore);
+
         displayGame(gameArray,character,gameXspan,gameYspan);
         newMove = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
         if (newMove.userEntry == 'r' && character->playerMove == 0) {
