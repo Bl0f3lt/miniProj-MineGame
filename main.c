@@ -805,6 +805,8 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
         displayGame(gameArray,character,gameXspan,gameYspan);
         newMove = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
         if (newMove.userEntry == 'r' && character->playerMove == 0) {
+            freeGameArr(gameArray,gameYspan);
+            free(character);
             return 'r';
         }
         else if (newMove.userEntry == 'i') {
