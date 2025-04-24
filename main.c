@@ -380,16 +380,16 @@ void displayUserOptions(char **gameArray,character_t *character,int gameX,int ga
     //Displays the moves that the user can make
 
     pos_t characterPos = character->playerPos;
-    if (!((characterPos.y - 1)<0)) {
+    if (!((characterPos.y - 1)<0) && (gameArray[characterPos.y-1][characterPos.x] != 'B')) {
         printf("up: w\n");
     }
-    if (!((characterPos.x + 1)>gameX)) {
+    if (!((characterPos.x + 1)>gameX) && (gameArray[characterPos.y][characterPos.x+1] != 'B')) {
         printf("east: d\n");
     }
-    if (!((characterPos.y + 1)>gameY)) {
+    if (!((characterPos.y + 1)>gameY) && (gameArray[characterPos.y+1][characterPos.x] != 'B')) {
         printf("down: s\n");
     }
-    if (!((characterPos.x - 1)<0)) {
+    if (!((characterPos.x - 1)<0) && (gameArray[characterPos.y][characterPos.x-1] != 'B')) {
         printf("west: a\n");
     }
     if (((character->playerMove) - (character->lastCollectionMove))>=12) {
