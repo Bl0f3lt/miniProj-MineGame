@@ -71,6 +71,7 @@ struct character {
     int food;
     int health;
     int playerMove;
+    int lastCollectionMove;
     int money;
     int materialRem;
     materialInvItem_t materialInventory[NUM_MATERIALS];
@@ -352,6 +353,7 @@ void initCharacter(char **gameArr,character_t *character,material_t *materialArr
     character->food = 10;
     character->health = 3;
     character->playerMove = 0;
+    character->lastCollectionMove = 0;
     character->money = 0;
 
     //Place character in gameArr
@@ -742,6 +744,7 @@ void updateUserInventory(character_t *character,char **gameArr,pos_t newPosition
         char material = getItemToCollect(gameArr,newPosition);
         if (material != '.') {
             character->materialRem--;
+            character->lastCollectionMove = character->playerMove;
         }
         updateMaterialQuant(character,material);
     }
@@ -803,6 +806,7 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
     //main game loop
     while (character->health>0 && character->materialRem > 0 && !backOut) {
         printf("Materials Remaining: %d\n",character->materialRem);
+        printf("Current Move: %d   Last Collection Move: %d\n",character->playerMove,character->lastCollectionMove);
         displayGame(gameArray,character,gameXspan,gameYspan);
         newMove = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
         if (newMove.userEntry == 'r' && character->playerMove == 0) {
