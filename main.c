@@ -392,6 +392,9 @@ void displayUserOptions(char **gameArray,character_t *character,int gameX,int ga
     if (!((characterPos.x - 1)<0)) {
         printf("west: a\n");
     }
+    if (((character->playerMove) - (character->lastCollectionMove))>=12) {
+        printf("exit grid: l\n");
+    }
 }
 
 void displayGame(char **gameArray,character_t *character,int gameX,int gameY) {
@@ -450,6 +453,11 @@ int checkValidMove(character_t *character,char userMove,char **gameArray,int gam
     else if (userMove == 'r') {
         return 1;
     }
+    else if (userMove == 'l') {
+        if (((character->playerMove) - (character->lastCollectionMove))>=12) {
+            return 1;
+        }
+    }
     return 0;
 
 }
@@ -493,6 +501,10 @@ move_t getNewUserMove(char userEntry,character_t *character) {
     }
     else if (userEntry == 'r') {
         newMove.userEntry = 'r';
+        return newMove;
+    }
+    else if (userEntry == 'l') {
+        newMove.userEntry = 'l';
         return newMove;
     }
 }
@@ -814,6 +826,11 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
             free(character);
             return 'r';
         }
+        else if (newMove.userEntry == 'l' && (((character->playerMove) - (character->lastCollectionMove))>=12)) {
+            freeGameArr(gameArray,gameYspan);
+            free(character);
+            return 'l';
+        }
         else if (newMove.userEntry == 'i') {
             displayUserInv(character,materialArr);
         }
@@ -846,6 +863,7 @@ int main() {
 
     //Exit code table:
     // s: safe - normal running
+    // l: player exit
     // d: player death
     // r: player game reset
     // c: game crash.
