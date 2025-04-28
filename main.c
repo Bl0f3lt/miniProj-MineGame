@@ -980,6 +980,7 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
 
     //player death exit path
     char entry;
+    system("cls");
     printf("Unlucky! You Died!\n");
     printf("Better luck next time!\n");
     fseek(stdin,0,SEEK_END);
