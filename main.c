@@ -787,20 +787,14 @@ void updateUserPosition(char **gameArr,pos_t newPos,character_t *character) {
 void setPlayerScore(character_t *character) {
     float sumOfMoney = ((character->money) + ((character->food)*5));
     float collectedMats;
-    printf("Sum of money is %f\n",sumOfMoney);
     if (character->playerMove == 0) {
-        printf("Player Move is 0\n");
         character->playerScore = 0;
     }
     else if ((character->health * 5)+(sumOfMoney) == 0) {
-        printf("health*5 + som = 0\n");
         character->playerScore = 0;
     }
     else {
-        printf("Running formula\n");
-        printf("(pMove)*(h*5 + som) = %f\n",(character->playerMove) * ((character->health * 5)+(sumOfMoney)));
         collectedMats = (character->totalStartMaterials - character->materialRem);
-        printf("Collected Mats is %f\n",collectedMats);
         character->playerScore = collectedMats/(character->playerMove) * ((character->health * 5)+(sumOfMoney));
     }
 }
@@ -851,12 +845,20 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
     move_t newMove;
     int backOut = 0;
     //main game loop
-    while (character->health>0 && character->materialRem > 0 && !backOut) {
-        printf("Tot Start: %d\n",character->totalStartMaterials);
-        printf("Materials Remaining: %d\n",character->materialRem);
-        printf("Current Move: %d   Last Collection Move: %d\n",character->playerMove,character->lastCollectionMove);
-        setPlayerScore(character);
-        printf("Score: %f\n",character->playerScore);
+    while ((character->health>0) && !backOut) {
+        printf("Materials remaining: %d\n",character->materialRem);
+        if (character->materialRem == 0) {
+            char entry;
+            printf("You Win!\n");
+            setPlayerScore(character);
+            printf("Your Score is: %.2f \n",character->playerScore);
+            printf("Press Enter to continue!");
+            scanf("%c",&entry);
+
+            freeGameArr(gameArray,gameYspan);
+            free(character);
+            return 'w';
+        }
 
         displayGame(gameArray,character,gameXspan,gameYspan);
         newMove = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
@@ -870,6 +872,7 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
         //    free(character);
         //    return 'l';
         //}
+
         else if (newMove.userEntry == 'i') {
             displayUserInv(character,materialArr);
         }
@@ -901,7 +904,8 @@ int main() {
     shopItemArr = generateShopItems();
 
     //Exit code table:
-    // s: safe - normal running
+    // s: default state
+    // w: player win
     // l: player exit
     // d: player death
     // r: player game reset
@@ -913,6 +917,10 @@ int main() {
     while (exitCode == 's' || exitCode == 'r') {
         exitCode = runGame(materialArr, shopItemArr);
     }
+    if (exitCode == 'w') {
+        printf("Congratulations! You win!\n");
+    }
+
     printf("exitCode: %c\n",exitCode);
     scanf("%c",&exitCode);
 }
