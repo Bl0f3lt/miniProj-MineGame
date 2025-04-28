@@ -855,8 +855,9 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
     int backOut = 0;
     //main game loop
     while ((character->health>0) && !backOut) {
-        printf("Materials remaining: %d\n",character->materialRem);
+
         if (character->materialRem == 0) {
+            //Win exit path
             char entry;
             printf("You Win!\n");
             setPlayerScore(character);
@@ -870,6 +871,7 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
             return 'w';
         }
 
+        //Main game code
         displayGame(gameArray,character,gameXspan,gameYspan);
         newMove = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
         if (newMove.userEntry == 'r' && character->playerMove == 0) {
