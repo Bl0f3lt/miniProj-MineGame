@@ -392,6 +392,10 @@ void displayUserOptions(char **gameArray,character_t *character,int gameX,int ga
     //Takes gameArray and character
     //Displays the moves that the user can make
 
+    if (character->playerMove == 0) {
+        printf("reset grid: r\n\n");
+    }
+
     pos_t characterPos = character->playerPos;
     if (!((characterPos.y - 1)<0)) {
         if (gameArray[characterPos.y-1][characterPos.x] != 'B') {
@@ -418,6 +422,10 @@ void displayUserOptions(char **gameArray,character_t *character,int gameX,int ga
     if (((character->playerMove) - (character->lastCollectionMove))>=12) {
         printf("exit grid: l\n");
     }
+
+    printf("\n");
+    printf("shop: b\n");
+
 }
 
 void displayGame(char **gameArray,character_t *character,int gameX,int gameY) {
@@ -859,6 +867,7 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
         if (character->materialRem == 0) {
             //Win exit path
             char entry;
+            system("cls");
             printf("You Win!\n");
             setPlayerScore(character);
             printf("Your Score is: %.2f \n",character->playerScore);
@@ -874,16 +883,30 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
         //Main game code
         displayGame(gameArray,character,gameXspan,gameYspan);
         newMove = getUserMove(gameArray,character,materialArr,gameXspan,gameYspan);
+
+
+        //user move functions
         if (newMove.userEntry == 'r' && character->playerMove == 0) {
             freeGameArr(gameArray,gameYspan);
             free(character);
+            system("cls");
             return 'r';
         }
-        //else if (newMove.userEntry == 'l' && (((character->playerMove) - (character->lastCollectionMove))>=12)) {
-        //    freeGameArr(gameArray,gameYspan);
-        //    free(character);
-        //    return 'l';
-        //}
+
+        else if (newMove.userEntry == 'l' && (((character->playerMove) - (character->lastCollectionMove))>=12)) {
+            char entry;
+            system("cls");
+            printf("You chose to leave the mine.\n");
+            setPlayerScore(character);
+            printf("Your Score is: %.2f \n",character->playerScore);
+            printf("Press Enter to continue!");
+            fseek(stdin,0,SEEK_END);
+            scanf("%c",&entry);
+
+            freeGameArr(gameArray,gameYspan);
+            free(character);
+            return 'l';
+        }
 
         else if (newMove.userEntry == 'i') {
             displayUserInv(character,materialArr);
@@ -929,9 +952,7 @@ int main() {
     while (exitCode == 's' || exitCode == 'r') {
         exitCode = runGame(materialArr, shopItemArr);
     }
-    if (exitCode == 'w') {
-        printf("Congratulations! You win!\n");
-    }
+    printf("Exit code: %c\n",exitCode);
 
     scanf("%c",&exitCode);
 }
