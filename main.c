@@ -743,6 +743,12 @@ void shop(shopItem_t *shopItemArr, character_t *character) {
 }
 
 move_t getUserMove(char **gameArray,character_t *character,material_t *materialArr,int gameX,int gameY) {
+    //getUserMove function
+    //Gets a character from the user
+    //Checks if character is a valid move.
+    //Computes new user position if the move is a position change
+    //Returns move_t
+
     char userEntry;
     int validEntry = 0;
     fseek(stdin,0,SEEK_END);
@@ -766,13 +772,18 @@ move_t getUserMove(char **gameArray,character_t *character,material_t *materialA
     return newMove;
 }
 
-//Check against design below:
 
 char getItemToCollect(char **gameArr,pos_t newPosition) {
+    //getItemToCollect function
+    //Returns item in position in passed grid
+
     return gameArr[newPosition.y][newPosition.x];
 }
 
 void updateMaterialQuant(character_t *character,char material) {
+    //updateMaterialQuant function
+    //Iterates through materials in inventory and updates quant if is found to be the chosen material
+
     int i;
     for (i=0;i<NUM_MATERIALS;i++) {
         if (character->materialInventory[i].invMaterial->ident == material) {
@@ -783,17 +794,24 @@ void updateMaterialQuant(character_t *character,char material) {
 }
 
 void updateUserInventory(character_t *character,char **gameArr,pos_t newPosition) {
+    //updateUserInventory function
+    //Updates the users inventory if a material is collected
+
     if (!((newPosition.x == character->playerPos.x) && (newPosition.y == character->playerPos.y))) {
         char material = getItemToCollect(gameArr,newPosition);
         if (material != '.') {
             character->materialRem--;
             character->lastCollectionMove = character->playerMove;
+            updateMaterialQuant(character,material);
         }
-        updateMaterialQuant(character,material);
     }
 }
 
 void updateUserPosition(char **gameArr,pos_t newPos,character_t *character) {
+    //updateUserPosition function
+    //Updates the users icon on grid and places to new position
+    //Fills old position with air
+
     if (!((newPos.x == character->playerPos.x) && (newPos.y == character->playerPos.y))) {
         gameArr[character->playerPos.y][character->playerPos.x] = '.';
         character->playerPos = newPos;
@@ -802,6 +820,10 @@ void updateUserPosition(char **gameArr,pos_t newPos,character_t *character) {
 }
 
 void setPlayerScore(character_t *character) {
+    //setPlayerScore function
+    //Math function to calculate the users score based on character stats
+    //Has conditions to prevent divide by 0 error
+
     float sumOfMoney = ((character->money) + ((character->food)*5));
     float collectedMats;
     if (character->playerMove == 0) {
@@ -817,20 +839,25 @@ void setPlayerScore(character_t *character) {
 }
 
 void updateConsumables(character_t *character) {
+    //updateConsumables function
+    //Updates the players move counter and stats each move
+
     character->playerMove += 1;
     if (((character->playerMove)%2)==0) {
         if ((character->food) != 0) {
             character->food -= 1;
-            printf("foodNum: %d\n",character->food);
         }
         else {
             character->health -= 1;
-            printf("heath: %d\n",character->health);
         }
     }
 }
 
 void freeGameArr(char **gameArray, int ySpan) {
+    //function to free the 2d gameArray
+    //Prevents memory block up.
+    //Called on ever exit from runGame
+
     int i;
     for (i=0;i<ySpan;i++) {
         free(gameArray[i]);
@@ -839,6 +866,10 @@ void freeGameArr(char **gameArray, int ySpan) {
 }
 
 char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
+    //runGame function
+    //Main game function. Calls all functions to make the game function
+    //Returns and character representing an exitCode depending on reason of exit
+
     //Manual definition of size for now. May change to add difficulty.
     int gameXspan,gameYspan;
     gameXspan = 12;
@@ -858,14 +889,15 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
     //Instance character attributes
     initCharacter(gameArray,character,materialArr,shopItemArr,gameXspan);
 
-
     move_t newMove;
     int backOut = 0;
-    //main game loop
+
+    //Main Game Loop
     while ((character->health>0) && !backOut) {
 
         if (character->materialRem == 0) {
             //Win exit path
+
             char entry;
             system("cls");
             printf("You Win!\n");
@@ -887,6 +919,8 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
 
         //user move functions
         if (newMove.userEntry == 'r' && character->playerMove == 0) {
+            //reset game exit path
+
             freeGameArr(gameArray,gameYspan);
             free(character);
             system("cls");
@@ -894,6 +928,8 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
         }
 
         else if (newMove.userEntry == 'l' && (((character->playerMove) - (character->lastCollectionMove))>=12)) {
+            //Player exit path
+
             char entry;
             system("cls");
             printf("You chose to leave the mine.\n");
@@ -921,6 +957,8 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
             updateConsumables(character);
         }
     }
+
+    //player death exit path
     freeGameArr(gameArray,gameYspan);
     free(character);
     return 'd';
