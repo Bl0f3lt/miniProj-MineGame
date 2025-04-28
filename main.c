@@ -384,17 +384,27 @@ void displayUserOptions(char **gameArray,character_t *character,int gameX,int ga
     //Displays the moves that the user can make
 
     pos_t characterPos = character->playerPos;
-    if (!((characterPos.y - 1)<0) && (gameArray[characterPos.y-1][characterPos.x] != 'B')) {
-        printf("up: w\n");
+    if (!((characterPos.y - 1)<0)) {
+        if (gameArray[characterPos.y-1][characterPos.x] != 'B') {
+            printf("up: w\n");
+        }
     }
-    if (!((characterPos.x + 1)>gameX) && (gameArray[characterPos.y][characterPos.x+1] != 'B')) {
-        printf("east: d\n");
+    if (!((characterPos.x + 1)>=gameX)) {
+        if (gameArray[characterPos.y][characterPos.x+1] != 'B') {
+            printf("east: d\n");
+        }
     }
-    if (!((characterPos.y + 1)>gameY) && (gameArray[characterPos.y+1][characterPos.x] != 'B')) {
-        printf("down: s\n");
+
+    if (!((characterPos.y + 1)>=gameY)) {
+        if (gameArray[characterPos.y+1][characterPos.x] != 'B') {
+            printf("down: s\n");
+        }
     }
-    if (!((characterPos.x - 1)<0) && (gameArray[characterPos.y][characterPos.x-1] != 'B')) {
-        printf("west: a\n");
+
+    if (!((characterPos.x - 1)<0)) {
+        if (gameArray[characterPos.y][characterPos.x-1] != 'B') {
+            printf("west: a\n");
+        }
     }
     if (((character->playerMove) - (character->lastCollectionMove))>=12) {
         printf("exit grid: l\n");
@@ -855,11 +865,11 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
             free(character);
             return 'r';
         }
-        else if (newMove.userEntry == 'l' && (((character->playerMove) - (character->lastCollectionMove))>=12)) {
-            freeGameArr(gameArray,gameYspan);
-            free(character);
-            return 'l';
-        }
+        //else if (newMove.userEntry == 'l' && (((character->playerMove) - (character->lastCollectionMove))>=12)) {
+        //    freeGameArr(gameArray,gameYspan);
+        //    free(character);
+        //    return 'l';
+        //}
         else if (newMove.userEntry == 'i') {
             displayUserInv(character,materialArr);
         }
@@ -903,4 +913,6 @@ int main() {
     while (exitCode == 's' || exitCode == 'r') {
         exitCode = runGame(materialArr, shopItemArr);
     }
+    printf("exitCode: %c\n",exitCode);
+    scanf("%c",&exitCode);
 }
