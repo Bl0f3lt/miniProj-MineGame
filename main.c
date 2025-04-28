@@ -5,7 +5,7 @@
 //24066799 MineGame C mini Project
 
 //Constant value equal to number of collectable items in the Game.
-#define NUM_MATERIALS 4
+#define NUM_MATERIALS 5
 #define NUM_SHOP_ITEMS 2
 
 //Defining structures
@@ -110,7 +110,8 @@ material_t *generateMaterials() {
     setMaterial(&materialArr[0],'.',"air",100,0,0,1);
     setMaterial(&materialArr[1],'e',"emerald",10,25,10,1);
     setMaterial(&materialArr[2],'d',"diamond",5,40,5,1);
-    setMaterial(&materialArr[3],'B',"bedrock",10,100,25,0);
+    setMaterial(&materialArr[3],'a',"artifact",1,100,100,1);
+    setMaterial(&materialArr[4],'B',"bedrock",10,100,25,0);
 
     return materialArr;
 }
