@@ -142,6 +142,26 @@ shopItem_t *generateShopItems() {
     return shopArr;
 }
 
+void displayGameWelcome(void) {
+    printf("Welcome to mine game!\n\n");
+    printf("In this turn-based mining game the objective is to collect all the materials in the mine\n\n");
+    printf("Watch out for your food and health\n");
+    printf("If your food goes to 0, your health will start to drop.\n");
+    printf("If you reach 0 health, then its game over!\n");
+    printf("Try to keep your food and health as high as possible to maximise your score!\n");
+    printf("More food can be purchased from the shop by pressing b.\n\n");
+    printf("To acquire money, you can sell your collected materials in the shop.\n\n");
+    printf("Upon first entry to the grid, you have the option to change mine site by pressing r.\n\n");
+    printf("Press Enter to play!\n");
+
+    char entry;
+    fseek(stdin, 0, SEEK_END);
+    scanf("%c",&entry);
+    system("cls");
+}
+
+
+
 char **generate2Darr(int x,int y) {
     //generate 2d array function
     //generates a 2d character array with size of passed values
@@ -959,6 +979,12 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
     }
 
     //player death exit path
+    char entry;
+    printf("Unlucky! You Died!\n");
+    printf("Better luck next time!\n");
+    fseek(stdin,0,SEEK_END);
+    scanf("%c",&entry);
+
     freeGameArr(gameArray,gameYspan);
     free(character);
     return 'd';
@@ -975,6 +1001,8 @@ int main() {
     //Shop item array generation
     shopItem_t *shopItemArr;
     shopItemArr = generateShopItems();
+
+    displayGameWelcome();
 
     //Exit code table:
     // s: default state
