@@ -221,10 +221,10 @@ void setMineableObjects(char **gameArray, material_t *materialArr,character_t *c
     character->totalStartMaterials = character->materialRem;
 }
 
-void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspan,int gameYspan) {
+void setImpassableObjects(char **gameArray,material_t *materialArr,character_t *character, int gameXspan,int gameYspan) {
     //Populate the gameArray with pseudo-random distribution of impassable objects
     //Places initial randomly
-    //Uses second random dist to fill out other impassables
+    //Uses second random dist to fill out other impassable objects
     //Uses pointers
 
     int i,j,k,randNum;
@@ -239,6 +239,9 @@ void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspa
         for (i=0;i<gameXspan;i++) {
             randNum = rand() % 100;
             if (randNum > 95) { //Value to determine frequency of clumps
+                if (gameArray[j][i] != '.') {
+                    character->materialRem -= 1;
+                }
                 gameArray[j][i] = impassableMat.ident;
             }
         }
@@ -251,9 +254,15 @@ void setImpassableObjects(char **gameArray,material_t *materialArr, int gameXspa
                 randNum = rand() % rowChance;
                 if (randNum < 4) { //Number to set the size of impassable clumps
                     if ((i+1)<gameXspan) {
+                        if (gameArray[j][i+1] != '.') {
+                            character->materialRem -= 1;
+                        }
                         gameArray[j][i+1] = impassableMat.ident;
                     }
                     else if ((j+1)<gameYspan) {
+                        if (gameArray[j+1][i] != '.') {
+                            character->materialRem -= 1;
+                        }
                         gameArray[j+1][i] = impassableMat.ident;
                     }
                     else {
@@ -276,7 +285,7 @@ void setGameArrayValues(char **gameArray,material_t *materialArr,character_t *ch
     //Uses pointers
 
     setMineableObjects(gameArray,materialArr,character,gameXspan,gameYspan);
-    setImpassableObjects(gameArray,materialArr,gameXspan,gameYspan);
+    setImpassableObjects(gameArray,materialArr,character,gameXspan,gameYspan);
 }
 
 
