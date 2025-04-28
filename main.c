@@ -862,6 +862,7 @@ char runGame(material_t *materialArr,shopItem_t *shopItemArr) {
             setPlayerScore(character);
             printf("Your Score is: %.2f \n",character->playerScore);
             printf("Press Enter to continue!");
+            fseek(stdin,0,SEEK_END);
             scanf("%c",&entry);
 
             freeGameArr(gameArray,gameYspan);
@@ -930,6 +931,5 @@ int main() {
         printf("Congratulations! You win!\n");
     }
 
-    printf("exitCode: %c\n",exitCode);
     scanf("%c",&exitCode);
 }
