@@ -5,6 +5,7 @@
 
 #include "constants.h"
 #include "structures.h"
+#include "character.c"
 //24066799 MineGame C mini Project
 
 //Functions
@@ -278,7 +279,7 @@ pos_t getRandStartPos(int gameXspan) {
     //Gets a random position with y coord of 0.
     return getRandPos(gameXspan,0);
 }
-
+/*
 void initInvArr(character_t *character,material_t *materialArr,shopItem_t *shopItemArr) {
     //Initialise character inventory arrays
     //creates arrays of length of number of materials
@@ -320,8 +321,9 @@ void initCharacter(char **gameArr,character_t *character,material_t *materialArr
     //Place character in gameArr
     gameArr[character->playerPos.y][character->playerPos.x] = '@';
 }
-
+*/
 //Main game loop functions
+
 void displayWorld(char **gameArray,int gameX,int gameY) {
     //display world function
     //Takes the gameArray and iterates through printing each cell.
@@ -487,7 +489,7 @@ move_t getNewUserMove(char userEntry,character_t *character) {
         return newMove;
     }
 }
-
+/*
 void displayUserInv(character_t *character,material_t *materialArr){
     //Display user invenetory function
     //Iterates through the users materials and prints the different materials and quantities
@@ -514,6 +516,8 @@ void displayCharacterMoney(character_t *character) {
 
     printf("Money Available: %d\n",character->money);
 }
+*/
+//Shop functs
 
 void displayShopOptions(character_t *character) {
     //Display shop options function
@@ -720,6 +724,7 @@ move_t getUserMove(char **gameArray,character_t *character,material_t *materialA
     return newMove;
 }
 
+//Movement funct
 
 char getItemToCollect(char **gameArr,pos_t newPosition) {
     //getItemToCollect function
@@ -767,6 +772,8 @@ void updateUserPosition(char **gameArr,pos_t newPos,character_t *character) {
     }
 }
 
+//Other loop functs
+/*
 void setPlayerScore(character_t *character) {
     //setPlayerScore function
     //Math function to calculate the users score based on character stats
@@ -800,6 +807,7 @@ void updateConsumables(character_t *character) {
         }
     }
 }
+*/
 
 void freeGameArr(char **gameArray, int ySpan) {
     //function to free the 2d gameArray
