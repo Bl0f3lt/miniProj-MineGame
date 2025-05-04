@@ -3,13 +3,16 @@
 #include <windows.system.h>
 #include <time.h>
 //24066799 MineGame C mini Project
+#include "constants.h"
+#include "structures.h"
+#include "character.h"
 
 //Constant value equal to number of collectable items in the Game.
 #define NUM_MATERIALS 5
 #define NUM_SHOP_ITEMS 2
 
 //Defining structures
-
+/*
 //pos structure
 struct pos {
     int x;
@@ -80,6 +83,7 @@ struct character {
     itemInvItem_t itemInventory[NUM_SHOP_ITEMS];
 };
 typedef struct character character_t;
+*/
 //Functions
 
 void setMaterial(material_t *materialPointer, char ident, char name[10], int weight, int value, int size, int mineable) {
