@@ -15,6 +15,8 @@ void displayUserInv(character_t *character,material_t *materialArr);
 
 void displayCharacterMoney(character_t *character);
 
+void updateMaterialQuant(character_t *character,char material)
+
 void updateConsumables(character_t *character);
 
 void setPlayerScore(character_t *character);
