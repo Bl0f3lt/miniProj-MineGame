@@ -7,6 +7,16 @@
 #ifndef SHOP_H
 #define SHOP_H
 
+void setShopItem(shopItem_t *shopPointer, int itemNum, char itemName[10], int cost, int foodValue);
+//Sets passed pointer attributes from passed data
+//Uses pointers
+
+shopItem_t *generateShopItems();
+//generate shop items function
+//generates an array of shopItem_t
+//Calls set shop items with each items details
+//returns array of shopItem_t
+
 void displayShopOptions(character_t *character);
 //Display shop options function
 //clears console and prints shop options

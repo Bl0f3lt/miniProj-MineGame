@@ -8,6 +8,7 @@
 #include "character.h"
 #include "world.h"
 #include "shop.h"
+#include "mainGame.h"
 
 //24066799 MineGame C mini Project
 
@@ -445,7 +446,7 @@ int checkValidMove(character_t *character,char userMove,char **gameArray,int gam
 
 }
 
-move_t getNewUserMove(char userEntry,character_t *character) {
+move_t getNewUserPos(char userEntry,character_t *character) {
     //Get new user move function
     //takes the users entry and character
     //Computes new position based off the entered move
@@ -720,7 +721,7 @@ move_t getUserMove(char **gameArray,character_t *character,material_t *materialA
     }
     */
 
-    move_t newMove = getNewUserMove(userEntry,character);
+    move_t newMove = getNewUserPos(userEntry,character);
     return newMove;
 }
 

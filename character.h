@@ -29,6 +29,15 @@ void updateMaterialQuant(character_t *character,char material)
 //updateMaterialQuant function
 //Iterates through materials in inventory and updates quant if is found to be the chosen material
 
+void updateUserInventory(character_t *character,char **gameArr,pos_t newPosition);
+//updateUserInventory function
+//Updates the users inventory if a material is collected
+
+void updateUserPosition(char **gameArr,pos_t newPos,character_t *character);
+//updateUserPosition function
+//Updates the users icon on grid and places to new position
+//Fills old position with air
+
 void updateConsumables(character_t *character);
 //updateConsumables function
 //Updates the players move counter and stats each move

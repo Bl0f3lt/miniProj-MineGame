@@ -8,6 +8,16 @@
 #ifndef WORLD_H
 #define WORLD_H
 
+void setMaterial(material_t *materialPointer, char ident, char name[10], int weight, int value, int size, int mineable);
+//setMaterial function
+//Take passed data and pointer and assign attributes
+
+material_t *generateMaterials();
+//Generate Materials Function
+//generate an array of material_t
+//Call setMaterial function with data to fill array
+//return material_t array
+
 char **generate2Darr(int x,int y);
 //generate 2d array function
 //generates a 2d character array with size of passed values
