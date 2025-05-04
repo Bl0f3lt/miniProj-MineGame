@@ -7,6 +7,7 @@
 #include "structures.h"
 #include "character.h"
 #include "world.h"
+#include "shop.h"
 
 //24066799 MineGame C mini Project
 
